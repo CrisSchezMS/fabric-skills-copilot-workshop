@@ -1,4 +1,4 @@
-"""Optional analytics outputs, separate from the unchanged raw-data generator."""
+"""Analytics outputs deployed separately from the unchanged raw-data generator."""
 
 from datetime import date
 from re import fullmatch
@@ -99,7 +99,7 @@ def validate_analytics_frames(frames):
 
 def write_analytics_tables(spark, frames, schema, approved=False):
     if approved is not True:
-        raise PermissionError("Publicacion desactivada: revisa y autoriza WRITE_ANALYTICS.")
+        raise PermissionError("La publicacion requiere un alcance de despliegue aprobado.")
     names = analytics_table_names(schema)
     if set(frames) != set(names):
         raise ValueError("Se requieren exactamente sales_clean, sales_daily y calendar.")

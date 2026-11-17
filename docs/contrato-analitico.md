@@ -1,10 +1,11 @@
 # Contrato de la ampliacion analitica
 
-Este contrato propone **nuevos destinos**. No afirma que existan en tu Fabric.
+Este contrato define **los destinos que Copilot debe desplegar y verificar**
+tras aprobar el alcance. No afirma que ya existan en tu Fabric.
 Conserva el generador y las tres tablas de [datos.md](datos.md) sin cambios.
 Los modulos avanzados no introducen clientes, pedidos, costes ni inventario.
 
-## Tablas propuestas
+## Tablas a publicar
 
 Todas se publican con Spark, en el esquema confirmado del mismo Lakehouse
 dedicado al taller. `dbo` no se asume como prueba del esquema real.
@@ -17,8 +18,8 @@ dedicado al taller. `dbo` no se asume como prueba del esquema real.
 
 En el detalle se mantienen los tipos raw; `category` y `city` son string
 canonicos de las dimensiones. `net_amount` es decimal(18,2), calculado con
-HALF_UP por linea antes de sumar. La solucion 02 ya produce este esquema en
-memoria; el nuevo notebook 03 permite publicarlo tras aprobacion.
+HALF_UP por linea antes de sumar. `src/transform_sales.py` produce este esquema;
+Copilot incorpora esa fuente al notebook operativo que crea y ejecuta en Fabric.
 
 En el agregado, `sales_count` y `units` son long/bigint; `net_revenue` es
 decimal(38,2), conversion explicita tras sumar importes decimal(18,2). Las cuatro columnas
@@ -45,15 +46,18 @@ interanual ni datos suficientes para afirmar estacionalidad.
 
 ## Publicacion y reejecucion
 
-`WRITE_ANALYTICS = False` deja todo en memoria. Tras revisar los totales y el
-destino, la persona participante puede autorizar la publicacion.
-La referencia comprueba **los tres destinos antes de escribir ninguno** y usa
-`errorifexists`; no ofrece una opcion de sobrescritura.
+La aprobacion precede a la creacion/ejecucion del notebook operativo.
+Al ejecutarse publica directamente: no deja un flag de escritura desactivado
+como entrega. Comprueba el Lakehouse esperado, valida esquemas y reconcilia;
+despues comprueba **los tres destinos antes de escribir ninguno** y usa
+`errorifexists`, sin opcion de sobrescritura. Los helpers conservan aprobacion
+explicita de bajo nivel. Lee [el runbook](despliegue.md).
 
 Las tres escrituras no son una transaccion. Una colision concurrente o un
 fallo intermedio puede dejar tablas parciales. Detente, inspecciona el estado
-y decide con la persona facilitadora; no borres ni reintentes automaticamente.
-La aprobacion local no concede permisos ni sustituye la confirmacion remota.
+y decide el siguiente paso; no borres ni reintentes automaticamente.
+La aprobacion del alcance no concede permisos. Tras las tres tablas validadas,
+reanuda por el modelo, no vuelvas a publicar sobre ellas.
 
 ## Artefactos que consumen estas tablas
 

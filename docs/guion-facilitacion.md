@@ -1,73 +1,63 @@
-# Guion de facilitacion: 60 minutos
+# Facilitacion: construir en Fabric con Copilot
 
-## Preparacion previa
+## Preparacion obligatoria
 
-- Prueba el notebook en tu capacidad Fabric y confirma las tres tablas y el
-  esquema antes de la sesion. Este repo no crea recursos por ti.
-- Prepara VS Code con una de las rutas de instalacion de skills y el repo abierto.
-- Ten el notebook 01 descargado y un Lakehouse limpio de reserva.
-- Si usaras conexion en vivo, prueba autenticacion, herramientas y permisos.
-  No dependas de ella: la ruta de generacion local cubre el objetivo del taller.
-- Para mostrar el resultado completo, prepara un modelo/informe validado
-  y, opcionalmente, una Native App en un entorno de demostracion dedicado.
-  Etiquetalos como preparados antes de la sesion, no creados en directo.
-- Mantiene la solucion separada hasta que hayas explicado las reglas.
-- No muestres tokens, tenants privados, otros workspaces ni datos de terceros.
+Prueba autenticacion, skills, capacidad y permisos antes del taller.
+Cada participante debe conocer **el nombre de su workspace**, no sus IDs.
+Prepara un Lakehouse dedicado por persona y verifica las previews elegidas.
+No dependas de instalar herramientas durante una demo cronometrada.
 
-## Agenda
+El notebook generador se conserva intacto. Puede ejecutarse antes o mediante
+Copilot al iniciar, con aprobacion. No presentes datos/artefactos preparados
+por facilitacion como si se hubieran desplegado en directo.
 
-| Minutos | Que mostrar | Mensaje |
+## Primera sesion: un bloque conectado de 60 minutos
+
+| Minutos | Accion real | Aprendizaje |
 |---|---|---|
-| 0-8 | Objetivo, primer prompt y skills | Crear artefactos exige contexto, herramientas y revision |
-| 8-18 | Informe del generador y perfilado | Filas raw no son ventas unicas ni pedidos |
-| 18-30 | Reglas y limpieza en memoria | Dimensiones canonicas, decimal y comprobaciones |
-| 30-42 | Plan de base analitica del modulo 03 | Granularidad, tres destinos y escritura protegida; publicar solo tras aprobacion |
-| 42-53 | Consumo en un modelo/informe preparado | Mismas medidas y filtros; identificar que ya existia |
-| 53-60 | Elegir siguiente modulo y cierre | Osmos, modelo/informe, ontologia, agente o Native App |
+| 0-10 | Nombre del workspace, descubrimiento y preflight | Skills no son permisos; no hace falta copiar IDs |
+| 10-18 | Inventario y aprobacion del alcance | Autorizar un despliegue concreto permite avanzar |
+| 18-40 | Crear y ejecutar notebook Spark o tarea Osmos | Perfilado, copias, conflictos, dimensiones y decimal |
+| 40-53 | Releer las tres tablas y reconciliar | Una respuesta o job iniciado no prueban una entrega |
+| 53-60 | Inventario de evidencias y siguiente bloque | Reanudar desde lo validado sin sobrescribir |
 
-El arranque de Spark y la generacion se preparan antes de la sesion. No intentes
-construir todos los artefactos en una hora con principiantes. El bloque de
-publicacion puede quedar como codigo revisado si no hay tiempo o autorizacion.
-Si generas datos en directo, recorta el bloque de consumo, no permisos ni validacion.
+Si Spark/Osmos tarda mas, conserva la identidad del job/tarea y continua su
+seguimiento en la siguiente sesion. No declares exito ni uses cifras de
+referencia como si fueran observadas para cumplir el horario.
 
-## Continuacion por modulos
+## Siguientes sesiones
 
-Usa [el mapa avanzado](modulos-avanzados.md) para organizar sesiones posteriores.
-03 y 04 comparan Spark guiado y Osmos para el mismo resultado de ingenieria.
-05 construye desde cero el modelo y las dos paginas que se mostraron preparadas.
-06 representa el negocio con entidades y relaciones. 07 evalua un agente contra
-referencias observadas; 08 crea una App real con SSO y conector al modelo.
+1. Modelo Direct Lake y dashboard Power BI. Reserva el turno de aprobacion de
+   especificacion del informe que exige la skill antes de construir/publicar.
+2. Ontologia. Declara V1/V2 y muestra preview antes de cada `yes`; verifica
+   entidades/relaciones/bindings, sin prometer chat V2 sobre V1.
+3. Data Agent. Crear/configurar/publicar desde SDK o REST y evaluar casos reales.
+4. Native App. Copilot genera proyecto Rayfin, integra conector, compila,
+   despliega y prueba la URL publicada con SSO.
 
-En cada entrega pide mostrar el artefacto, su fuente, la validacion y que
-autorizacion permitio crearlo. Para Osmos no basta mostrar una tarea arrancada;
-para Native App no basta mostrar una pantalla local; para Data Agent no basta
-una respuesta verosimil. Las limitaciones de previews se convierten en estados
-pendientes, no en un motivo para inventar APIs o saltar permisos.
+Usa [el mapa](modulos-avanzados.md) y [el runbook](despliegue.md).
+Pide en cada bloque mostrar item, origen, operacion final y evidencia.
+Para Osmos no basta tarea arrancada; para App no basta una pantalla local;
+para Data Agent no basta una respuesta verosimil.
 
-## Mini-demo de personalizacion
+## Explicar Copilot sin conocimientos previos
 
-Abre `.github/copilot-instructions.md` y luego `sql.instructions.md`.
-Explica `applyTo` con un archivo `.sql` y un `.ipynb`.
-Los globs se refieren a los archivos del repo, no a las tablas del workspace.
-Muestra la skill local `workshop-ventas` como ejemplo pequeno, diferenciandola
-del paquete oficial. No la presentes como una proteccion ejecutable.
+Muestra instrucciones del repo, `applyTo` y skill local. Explica que sus
+reglas aportan contexto, las skills oficiales aportan procedimientos y las
+herramientas autenticadas actuan con los permisos de la identidad.
+Los prompts son texto normal del [laboratorio](laboratorio.md).
 
-No anadas archivos por acumular formatos: no hay CLAUDE.md/GEMINI.md duplicados,
-ni servidores MCP activados por defecto, ni tokens de ejemplo.
-Los prompts son texto copiable en `docs/laboratorio.md`, sin depender de un
-formato de slash commands concreto del cliente.
+No pulses aceptar todo ni desactives protecciones para ganar tiempo.
+Ante un mal join, float o rechazo de nulos recuperables, vuelve al contrato.
+Ante bloqueo de preview, continua las ramas independientes y marca la pendiente.
 
-## Plan alternativo
+## Fallos, cierre y costes
 
-Si no hay capacidad o conexion, muestra los notebooks sin ejecutarlos y genera
-codigo con Copilot usando el contrato local. El JSON de resultados es una
-referencia calculada con datos sinteticos, no una prueba de una ejecucion en vivo.
-Declara explicitamente que esa parte de la demo no se ha ejecutado en Fabric.
+Sin conexion o permiso, diagnostica el bloqueo concreto; no conviertas la
+sesion en generacion offline y la declares completada. Puedes explicar codigo
+para aprender, pero la entrega conectada sigue pendiente.
+No muestres otros workspaces, tokens ni datos de terceros.
 
-Si Copilot propone un mal join, elimina nulos recuperables o usa float,
-conviertelo en aprendizaje: vuelve a las reglas y pide una correccion antes de
-ejecutar. No pulses aceptar todo para intentar ganar tiempo.
-
-Al finalizar, detened las sesiones Spark desde Fabric. Si se quieren eliminar
-recursos del taller, que cada participante revise y borre solo su propio
-Lakehouse/notebook; no hay script de borrado automatico.
+Conserva las evidencias privadas y deten sesiones Spark al terminar.
+La limpieza de recursos no es automatica: requiere revisar nombres y aprobar
+la eliminacion especifica. No se incluyen scripts de borrado masivo.

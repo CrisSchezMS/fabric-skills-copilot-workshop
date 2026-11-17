@@ -11,8 +11,10 @@ from unittest.mock import patch
 
 from src.analytics_sales import build_analytics_frames, validate_analytics_frames
 from src.fabric_tables import create_dataframes
+from src.profile_sales import profile_sales
 from src.synthetic_data import GeneratorConfig, expected_results, generate_data
 from src.transform_sales import clean_sales
+from tools.build_deployment_notebook import build_deployment_notebook
 from tools.build_notebooks import build_artifacts
 
 
@@ -163,6 +165,43 @@ class SparkIntegrationTests(unittest.TestCase):
                     actual_type = schema[column["sourceColumn"]].dataType.simpleString()
                     self.assertEqual(types[actual_type], column["dataType"])
 
+    def test_profile_separates_raw_copies_conflicts_and_deduplicated_incidents(self):
+        row = {
+            **self.data["sales_raw"][0],
+            "product_id": self.data["products"][0]["product_id"],
+            "store_id": self.data["stores"][0]["store_id"],
+            "quantity": 1,
+            "category_raw": None,
+            "city_raw": None,
+        }
+        data = {
+            **self.data,
+            "sales_raw": [
+                row,
+                dict(row),
+                {**row, "sale_id": "invalid", "quantity": 0},
+                {**row, "sale_id": "orphan", "product_id": 999_999},
+                {**row, "quantity": 2},
+            ],
+        }
+        frames = create_dataframes(self.spark, data)
+        expected = create_dataframes(self.spark, {key: [] for key in frames})
+        actual = profile_sales(frames, expected)
+        self.assertEqual(actual["raw_rows"], 5)
+        self.assertEqual(actual["exact_copies"], 1)
+        self.assertEqual(actual["distinct_contents"], 4)
+        self.assertEqual(actual["distinct_sale_ids"], 3)
+        self.assertEqual(actual["conflicting_sale_ids"], 1)
+        self.assertEqual(actual["raw_incidents"]["nulls"]["category_raw"], 5)
+        self.assertEqual(actual["deduplicated_incidents"]["nulls"]["category_raw"], 4)
+        for scope in ("raw_incidents", "deduplicated_incidents"):
+            self.assertEqual(actual[scope]["invalid_quantity_rows"], 1)
+            self.assertEqual(actual[scope]["orphan_product_rows"], 1)
+            self.assertEqual(actual[scope]["orphan_store_rows"], 0)
+        wrong = {**frames, "sales_raw": frames["sales_raw"].drop("quantity")}
+        with self.assertRaisesRegex(ValueError, "Esquema distinto"):
+            profile_sales(wrong, expected)
+
     def test_standalone_notebooks_execute_without_repository_imports_or_fabric_access(self):
         notebooks = build_artifacts()
         fake_utils = types.ModuleType("notebookutils")
@@ -173,36 +212,32 @@ class SparkIntegrationTests(unittest.TestCase):
                 for cell in notebooks["notebooks/01_generar_datos_sinteticos.ipynb"]["cells"]:
                     if cell["cell_type"] == "code" and cell["id"] != "persist":
                         exec(compile("".join(cell["source"]), cell["id"], "exec"), namespace)
-            self.assertEqual(namespace["frames"]["sales_raw"].count(), 10_200)
+                        if cell["id"] == "parameters":
+                            namespace["N_SALES"] = 1000
+            self.assertEqual(namespace["frames"]["sales_raw"].count(), 1020)
             lookup = {namespace["names"][key]: frame for key, frame in namespace["frames"].items()}
-            # Only the catalog read is substituted; all solution transformations use real Spark.
-            solution = {
-                "__name__": "__main__",
-                "spark": types.SimpleNamespace(table=lookup.__getitem__),
-                "display": lambda frame: frame.count(),
-            }
-            for cell in notebooks["soluciones/02_limpiar_y_analizar.ipynb"]["cells"]:
-                if cell["cell_type"] == "code":
-                    exec(compile("".join(cell["source"]), cell["id"], "exec"), solution)
-            self.assertEqual(solution["sales_clean"].count(), namespace["report"]["clean_rows"])
             advanced = {
                 "__name__": "__main__",
                 "spark": self.spark,
                 "display": lambda frame: frame.count(),
             }
-            for cell in notebooks["soluciones/03_publicar_analitica.ipynb"]["cells"]:
+            artifact = build_deployment_notebook("dbo", "00000000-0000-0000-0000-000000000001")
+            for cell in artifact["cells"]:
                 if cell["cell_type"] != "code":
                     continue
                 if cell["id"] == "inspect":
-                    # The schema checks stay real; only the remote table lookup is replaced.
+                    fake_utils.runtime.context["defaultLakehouseId"] = (
+                        "00000000-0000-0000-0000-000000000001"
+                    )
                     with patch.object(self.spark, "table", side_effect=lookup.__getitem__):
                         exec(compile("".join(cell["source"]), cell["id"], "exec"), advanced)
+                elif cell["id"] == "publish":
+                    advanced["write_analytics_tables"] = lambda *args, **kwargs: advanced["totals"]
+                    exec(compile("".join(cell["source"]), cell["id"], "exec"), advanced)
                 else:
                     exec(compile("".join(cell["source"]), cell["id"], "exec"), advanced)
-                if cell["id"] == "parameters":
-                    advanced["SCHEMA"] = "dbo"
-            self.assertFalse(advanced["WRITE_ANALYTICS"])
             self.assertEqual(advanced["totals"]["clean_rows"], namespace["report"]["clean_rows"])
+            self.assertEqual(advanced["published"], advanced["totals"])
 
 
 if __name__ == "__main__":

@@ -1,143 +1,104 @@
-# Preparacion de participantes
+# Preparacion para desplegar desde Copilot
 
-## 1. Antes del workshop
+La conexion con Fabric es parte del taller para **cada participante**.
+No necesitas conocer IDs ni escribir REST: das el nombre del workspace y
+Copilot utiliza las skills y herramientas autenticadas para descubrirlos.
 
-- Acceso a Microsoft Fabric y a un workspace con capacidad activa y permisos
-  para crear un notebook y escribir en un Lakehouse dedicado al taller.
-- El [notebook 01](../notebooks/01_generar_datos_sinteticos.ipynb) importado y
-  ejecutado con su configuracion por defecto. Un Lakehouse distinto por persona
-  evita pisar las tablas de otra.
-- VS Code y GitHub Copilot disponibles, con una cuenta que pueda usar el chat
-  o Copilot CLI segun la ruta elegida y las politicas de la organizacion.
-- Repo descargado y abierto en su raiz. Revisa el contenido antes de confiar
-  en una carpeta o autorizar herramientas.
+## 1. Entorno Fabric
 
-La generacion de datos se hace en Fabric, no con el kernel Python local de VS Code.
-El tiempo de inicio de Spark varia: prepara los datos antes de los 60 minutos.
+- Workspace dedicado al taller, capacidad activa y permisos de creacion y
+  ejecucion. Usa una ubicacion distinta por participante para evitar colisiones.
+- Lakehouse vacio o con las tres tablas del notebook 01. Si no existe,
+  Copilot puede crearlo e importar/ejecutar el generador tras aprobar el plan.
+- Permisos de acceso a los datos y de autoria del modelo/informe. El acceso
+  a Fabric no sustituye las licencias y permisos Power BI aplicables.
+- Para completar todas las ramas, servicios y configuraciones siguientes:
 
-## 2. Elige UNA ruta de Copilot
+| Componente | Comprobar antes |
+|---|---|
+| Spark | Capacidad, permisos de notebook/tablas y Lakehouse predeterminado |
+| Osmos | Acceso al servicio y capacidad elegible; trial confirmada FTL64 bloqueada por la skill revisada |
+| Direct Lake / Power BI | Capacidad/modo soportados y autoria, lectura y consultas del modelo |
+| Ontologia | Preview habilitada y version de autoria soportada por la skill |
+| Data Agent | Capacidad pagada soportada, ajustes IA/regionales y permiso de crear/publicar |
+| Native App | Fabric Apps habilitado, region/capacidad soportadas y derechos de despliegue; modelo con Read y Build para la consulta delegada |
 
-### A. Copilot CLI, tambien desde la terminal integrada de VS Code
+Pide a quien administra el entorno que prepare lo que falte. Copilot no debe
+cambiar tenant, capacidad o permisos para superar un bloqueo del laboratorio.
+Poder ejecutar Spark no garantiza acceso a Osmos o a otra preview.
 
-Requiere GitHub Copilot CLI instalado y autenticado. Sigue la
-[guia oficial de instalacion](https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-getting-started).
-En la terminal, instala el plugin oficial:
+## 2. Copilot CLI y Fabric Skills
+
+Abre el repo en VS Code o una terminal. Necesitas GitHub Copilot CLI instalado
+y autenticado; sigue la [guia oficial](https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-getting-started).
+Instala el bundle oficial si no lo tienes, con autorizacion de tu organizacion:
 
 ```powershell
 copilot plugin marketplace add microsoft/skills-for-fabric
 copilot plugin install fabric-skills@fabric-collection
 ```
 
-Despues, desde la raiz de este repo:
+Inicia `copilot` desde la raiz y comprueba `/skills list`. Busca:
+`workshop-ventas`, `spark-cli`, `sqldw-cli`, `project-osmos`,
+`semantic-model-authoring`, `powerbi-report-cli`, `ontology-cli` y `fabriciq`.
+Los nombres pueden incluir el prefijo del plugin.
 
-```powershell
-copilot
-```
+El inventario real manda. `powerbi-report-cli` existe en el repositorio oficial,
+pero una instalacion anterior puede no incluirla: actualiza el bundle mediante
+el procedimiento oficial aprobado antes de la sesion. No copies solo un
+SKILL.md: las referencias compartidas tambien son necesarias.
 
-Dentro de la sesion interactiva, comprueba:
+El plugin puede incluir agentes y configuracion MCP. Revisa lo instalado:
+**las skills son instrucciones, no autenticacion ni permisos**. La skill local
+coordina las oficiales, sin sustituirlas. No autorices globalmente todas las
+herramientas por comodidad.
+
+## 3. Herramientas y autenticacion que ejecutan
+
+Prepara las herramientas que requieran las skills:
+
+- CLI/API Fabric soportados y una sesion autenticada. Para la ruta Azure CLI,
+  usa `az login` cuando corresponda. Nunca copies access tokens.
+- MCP de modelado configurado/autorizado si se usa esa ruta. Tener el servidor
+  anunciado no demuestra que conecte al modelo; Copilot debe probarlo.
+- Para informes, las herramientas de autoria/validacion que indique la version
+  instalada de `powerbi-report-cli`.
+- Para Data Agent, SDK oficial `fabric-data-agent-sdk` en un entorno Python
+  dedicado, o REST publico soportado. Para evaluar, cliente MCP autorizado.
+- Para Native App, Node.js 20+ y scaffold/CLI Rayfin; sus paquetes se instalan
+  con versiones coherentes en un proyecto privado fuera de este repo.
+
+Copilot puede preparar y ejecutar instalaciones **cuando las autorices**;
+presenta antes paquetes y destino. No instales dependencias SDK en este repo
+solo por leer el laboratorio. Las pruebas locales no necesitan esos SDK.
+
+Consulta el [MCP setup oficial](https://github.com/microsoft/skills-for-fabric/tree/main/mcp-setup).
+El repo no incluye credenciales ni un `.vscode/mcp.json` con conexiones reales.
+No todos los clientes comparten sesion: `az login` no autentica automaticamente
+cada MCP ni Rayfin.
+
+## 4. Prueba de preparacion con el workspace por nombre
 
 ```text
-/skills list
+Mi workspace del taller es "<nombre de tu workspace>".
+Usa workshop-ventas. Te autorizo a descubrir solo ese workspace, sus items,
+capacidad y esquemas. Verifica las herramientas conectadas y los requisitos
+por artefacto. Resuelve los IDs sin pedirmelos. No crees ni cambies recursos
+en este preflight; dame el inventario listo/bloqueado y el alcance a aprobar.
 ```
 
-Busca `spark-cli`, `sqldw-cli` y la skill local `workshop-ventas`.
-Los nombres pueden incluir el prefijo del plugin. Pide a Copilot que indique
-las skills disponibles antes de comenzar.
+Esta fase de lectura conduce a la ejecucion del
+[laboratorio](laboratorio.md), no es el resultado final del taller.
 
-El plugin instala un bundle completo, con agentes y configuracion MCP ademas
-de skills. Eso NO garantiza permisos ni acceso a tu Fabric. Revisa cualquier
-peticion de autenticacion o ejecucion y no autorices todas las herramientas.
-
-### B. Chat de VS Code: solo skills para generar codigo
-
-Esta ruta usa APM siguiendo el README del
-[repositorio oficial](https://github.com/microsoft/skills-for-fabric#install-a-single-skill-apm).
-Requiere Python y acceso a paquetes publicos para instalar APM. Si tu organizacion
-gestiona instalaciones, pide que preparen la herramienta antes de la sesion.
-
-Desde la raiz del proyecto, en la terminal:
-
-```powershell
-python -m pip install apm-cli
-apm install microsoft/skills-for-fabric --skill spark-cli --skill sqldw-cli --target copilot --only apm
-```
-
-`--only apm` evita registrar servidores MCP para el ejercicio basico.
-APM despliega las skills y sus referencias compartidas; no copies un SKILL.md
-aislado porque puedes romper sus enlaces. Puede desplegar tambien agentes del
-paquete. Los archivos generados por la instalacion no son parte del material
-publicado en este repo.
-
-Abre una conversacion nueva en el chat de Copilot y comprueba la deteccion de las
-skills y de `.github/copilot-instructions.md` en las opciones de personalizacion
-de tu version de VS Code. Pide que consulte esas instrucciones. Descubrimiento
-no equivale a uso: revisa las referencias y la actividad de herramientas.
-
-En este modo Copilot lee los archivos locales, propone codigo y tu lo revisas
-y ejecutas en Fabric. **No puede inspeccionar tus tablas remotas solo por tener
-skills instaladas.**
-
-## 3. Conexion en vivo: opcional, solo para la persona facilitadora
-
-No es necesaria para generar codigo ni para ejecutar manualmente el notebook.
-Si quieres que Copilot consulte Fabric, prepara antes autenticacion, herramientas
-MCP/CLI compatibles y permisos minimos. Consulta el
-[MCP setup oficial](https://github.com/microsoft/skills-for-fabric/tree/main/mcp-setup).
-
-Para operaciones CLI que lo requieran, el proyecto oficial utiliza Azure CLI:
-
-```powershell
-az login
-```
-
-No imprimas ni pegues access tokens en el chat, archivos o presentaciones.
-Iniciar sesion en Azure no conecta por si solo todos los clientes MCP.
-La disponibilidad depende del cliente, tenant, endpoints y politicas.
-Comprueba el destino antes de autorizar una consulta o una escritura.
-
-Este repo no incluye un `.vscode/mcp.json` ni credenciales deliberadamente.
-La conexion en vivo debe prepararse y comprobarse antes, no durante la demo.
-
-## 4. Si algo falla
-
-| Sintoma | Comprobacion |
+| Bloqueo | Accion concreta |
 |---|---|
-| No hay skills | Revisa la ruta elegida, instalacion y sesion de Copilot; abre una nueva |
-| No se aplican instrucciones | Abre la raiz del repo, comprueba el cliente/harness y los patrones applyTo |
-| No hay Lakehouse predeterminado | Adjuntalo al notebook en Fabric y reinicia Spark |
-| No existe el esquema dbo | Confirma si el Lakehouse tiene esquemas; usa `""` solo si no los tiene |
-| Ya existen tablas | Usa otro Lakehouse o revisa conscientemente la sobrescritura |
-| Tablas visibles en Spark pero no SQL | Refresca el explorador del SQL endpoint y espera la sincronizacion |
-| Copilot no puede consultar Fabric | Trabaja en modo generacion local; no es un fallo del generador |
-| Spark no inicia o hay throttling | Revisa capacidad y concurrencia con la persona facilitadora |
+| 401 / sesion caducada | Autenticar el cliente correcto, sin publicar tokens |
+| 403 / workspace no visible | Confirmar nombre e identidad y pedir acceso a la persona responsable |
+| Skill o herramienta ausente | Identificarla e instalar/configurar con consentimiento |
+| Destino existente | Inspeccionar; reanudar solo lo validado de esta ejecucion o elegir otro destino explicitamente |
+| SQL aun sin tablas recien creadas | Esperar sincronizacion; no escribirlas con T-SQL |
+| Preview/capacidad no compatible | Marcar esa rama bloqueada; continuar las independientes |
 
-## 5. Preparacion para los modulos opcionales
-
-La [ruta avanzada](modulos-avanzados.md) requiere mas que el generador:
-
-| Modulo | Preparar antes de impartir |
-|---|---|
-| Base analitica | Un entorno sin los tres destinos derivados; permisos para tablas nuevas |
-| Osmos | Skill project-osmos y elegibilidad real de capacidad/servicio; la trial confirmada FTL64 no sirve para la ejecucion publica de esta skill |
-| Modelo e informe | Skill semantic-model-authoring, autoria Power BI y Direct Lake; MCP de modelado solo si se va a autorizar |
-| Ontologia | Experiencia y requisitos Ontology; creacion V2 guiada en el portal, no asumida en ontology-cli |
-| Data Agent | Capacidad y configuracion IA soportadas, modelo validado y permisos de creacion del item |
-| Native App | Fabric Apps habilitado, region/capacidad soportadas, permisos de despliegue y Node.js 20+ |
-
-Solo la persona administradora decide habilitar servicios o ajustar politicas.
-No se ejecutan instalaciones, az login, consultas o despliegues como parte
-automatica de leer el material. La instalacion de las dos skills basicas por
-APM no instala por si sola las demas: revisa el inventario real.
-
-Para una hora, prepara de antemano un modelo/informe validado de demostracion
-si quieres mostrar el consumo final. Distingue ese artefacto preparado por
-facilitacion de lo creado por participantes durante la sesion.
-Los laboratorios completos de creacion quedan en los modulos opcionales.
-Consulta [las fuentes y limites](referencias-avanzadas.md).
-
-## Referencia de preparacion
-
-Las instrucciones de instalacion se contrastaron el 17 de noviembre de 2026 con
-el [README oficial en esta revision](https://github.com/microsoft/skills-for-fabric/blob/e31422e7d1045ef3a0906df9ff5991f2338af010/README.md).
-Los comandos instalan la version que publique el proveedor: prueba tu configuracion
-antes de cada edicion del workshop.
+No sustituimos automaticamente el taller conectado por una demo offline.
+Si el entorno impide desplegar, se declara que la entrega esta bloqueada.
+Fuentes y compatibilidad: [referencias](referencias-avanzadas.md).

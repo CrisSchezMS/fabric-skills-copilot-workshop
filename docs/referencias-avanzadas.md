@@ -1,46 +1,54 @@
-# Fuentes y limites de los modulos avanzados
+# Fuentes y limites del despliegue conectado
 
-Referencias publicas consultadas el **17 de noviembre de 2026**. Las previews,
-CLI, permisos y nombres de interfaz cambian: contrasta tu version antes de la
-sesion. Consultar documentacion publica no equivale a consultar un tenant.
-No se han desplegado estos artefactos en el entorno de la persona participante.
+Las previews, CLI y permisos cambian: contrasta la version instalada antes
+de impartir. Consultar documentacion publica no prueba acceso a un tenant.
+La aceptacion real se registra durante el despliegue del participante.
 
-| Area | Fuente |
+| Area | Fuente oficial |
 |---|---|
-| Skills, instalacion y alcance actual | [Microsoft Skills for Fabric](https://github.com/microsoft/skills-for-fabric) |
-| Project Osmos | Skill instalada `project-osmos`, sus referencias de casos de uso y capacity-preflight; revisar la version instalada, sin copiarla a este repo |
-| Crear una ontologia | [Tutorial oficial de Ontology](https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-1-create-ontology) |
-| Crear y publicar Data Agent | [Guia oficial](https://learn.microsoft.com/en-us/fabric/data-science/how-to-create-data-agent) |
-| Contexto del modelo y Prep for AI | [Buenas practicas de modelos para Data Agent](https://learn.microsoft.com/en-us/fabric/data-science/semantic-model-best-practices) |
-| Fabric Apps preview | [Descripcion y requisitos](https://learn.microsoft.com/en-us/fabric/apps/overview) |
-| Crear App con portal o CLI | [Primer proyecto Fabric Apps](https://learn.microsoft.com/en-us/fabric/apps/create-app) |
-| SDK/CLI Rayfin, versiones y precauciones | [Referencia de desarrollo](https://rayfin.ai/docs/reference/agent-rules.md) |
-| Conectores y registro del cliente | [Conectores Rayfin](https://rayfin.ai/docs/connectors.md) |
-| Conector al modelo y forma de respuesta | [Semantic models en Rayfin](https://rayfin.ai/docs/connectors/semantic-models.md) |
+| Skills, instalacion y referencias | [Microsoft Skills for Fabric](https://github.com/microsoft/skills-for-fabric) |
+| Autoria de informes | [powerbi-report-cli](https://github.com/microsoft/skills-for-fabric/tree/main/skills/powerbi-report-cli) |
+| Osmos | Skill instalada `project-osmos`, casos de uso y capacity-preflight |
+| Ontologia | [Tutorial](https://learn.microsoft.com/en-us/fabric/iq/ontology/tutorial-1-create-ontology), skill instalada y sus limites V1/V2 |
+| Definicion Ontology nueva | [Contrato publico](https://learn.microsoft.com/en-us/rest/api/fabric/articles/item-management/definitions/ontology-definition) |
+| Data Agent SDK: crear/configurar/publicar/consultar | [Guia del SDK](https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-sdk) |
+| Crear Data Agent REST | [Create](https://learn.microsoft.com/en-us/rest/api/fabric/dataagent/items/create-data-agent) |
+| Definicion Data Agent | [Partes y schemas](https://learn.microsoft.com/en-us/rest/api/fabric/articles/item-management/definitions/data-agent-definition) |
+| Leer definicion | [GetDefinition](https://learn.microsoft.com/en-us/rest/api/fabric/dataagent/items/get-data-agent-definition) |
+| Publicar staging | [Publish](https://learn.microsoft.com/en-us/rest/api/fabric/dataagent/items/publish-data-agent) |
+| Metadata/Prep for AI | [Buenas practicas](https://learn.microsoft.com/en-us/fabric/data-science/semantic-model-best-practices) |
+| Fabric Apps | [Requisitos](https://learn.microsoft.com/en-us/fabric/apps/overview) y [crear App](https://learn.microsoft.com/en-us/fabric/apps/create-app) |
+| Rayfin CLI/SDK | [Referencia](https://rayfin.ai/docs/reference/agent-rules.md) |
+| Conectores Rayfin | [Registro](https://rayfin.ai/docs/connectors.md) y [modelo semantico](https://rayfin.ai/docs/connectors/semantic-models.md) |
 
-## Compatibilidad que hay que explicar
+## Alcance que no se debe confundir
 
-- **Osmos:** la skill dirige tareas de ingenieria de datos, no todos los
-  artefactos de Fabric. En produccion publica bloquea la trial confirmada
-  FTL64 y exige verificar la asignacion actual. No deducir elegibilidad por nombre.
-- **Ontologia:** el contrato de la ontology-cli instalada distingue autoria
-  legacy V1 y consulta V2. La creacion V2 del taller se hace en el portal.
-  No se ofrece un payload V1 como conversion o upgrade.
-- **Informe:** el repo contiene un diseno y medidas, no un `.pbix`/PBIP
-  funcional inventado. `fabriciq` consulta modelos/informes, no los crea.
-- **Data Agent:** las reglas DAX van en metadata/Prep for AI del modelo.
-  No se ofrecen ejemplos pregunta/DAX para un panel Example queries que
-  no los admite en modelos semanticos. Su ruta documentada usa Read para
-  consumir modelos; otras herramientas pueden requerir Build o Write.
-- **Native App:** se sigue el scaffold oficial y la referencia especifica
-  Rayfin 2.x para el adaptador, sin mezclar APIs 1.x/2.x. El resumen de alguna
-  pagina describe desarrollo local de forma general; la referencia actual
-  especifica advierte que `dev` puede provisionar backend remoto y que los
-  conectores se prueban desplegados. No se presupone un backend offline.
-- **Importes:** el conector devuelve importes formateados como texto solo
-  para presentacion. Los calculos y reconciliacion siguen en decimal en
-  Spark/modelo; no se usa Number/float para calcular dinero en la app.
+- **Osmos** ejecuta una tarea completa de ingenieria, no construye toda la solucion
+  BI/App. La skill revisada bloquea trial confirmada FTL64; comprueba la capacidad
+  actual sin inferir elegibilidad por nombre o por falta de visibilidad.
+- **Informe** tiene ruta oficial de autoria/publicacion por `powerbi-report-cli`.
+  La skill existe upstream pero puede faltar en una instalacion anterior.
+  Exige especificacion aprobada en otro turno antes de construir; FabricIQ no
+  sustituye esa autoria. El JSON del taller no es un PBIR importable.
+- **Ontologia**: la skill revisada crea V1 y consulta V2. Este taller ofrece
+  creacion V1 declarada, sin prometer chat V2. Tener documentacion publica V2
+  no permite saltar el limite de la skill instalada. No convertimos importes
+  decimal a Double para adaptar V1.
+- **Data Agent** no es portal-only: SDK/REST permiten crear, configurar y publicar.
+  La consulta del agente publicado usa su endpoint MCP (o cliente de consumo
+  oficialmente soportado), no una consulta directa FabricIQ al modelo.
+  Publicado y evaluado son estados distintos. El SDK de consumo antiguo de
+  Assistants no se usa como referencia de implementacion actual.
+- **Modelo**: metadata y Prep for AI gobiernan el contexto DAX. No inventes
+  pares Example queries de modelos/ontologias. Prep for AI/Verified Answers
+  se configuran solo por rutas soportadas; esa mejora no bloquea la creacion
+  normal del agente. Permisos de consumo Data Agent no son los de Rayfin.
+- **Native App** usa proyecto scaffold oficial y herramientas Rayfin, no una
+  pagina local ni una Power BI App. `dev` y `up` pueden aprovisionar remotamente.
+  No mezcles SDK 1.x/2.x. El adaptador sigue respuesta normalizada 2.x; importes
+  formateados como texto son solo presentacion, nunca aritmetica en JS.
 
-No se incluyen copias de las skills oficiales, tokens, configuraciones de
-autenticacion ni recursos preexistentes. Los JSON de diseno son propios del
-taller, no formatos oficiales de intercambio.
+Se conservan los gates de cada skill y no se cambian permisos/capacidad para
+forzar una demo. Sin capacidad compatible o herramienta soportada, esa entrega
+queda bloqueada con evidencia; el resto de ramas puede continuar.
+No se incluyen copias de skills oficiales, tokens ni conexiones de tenant.

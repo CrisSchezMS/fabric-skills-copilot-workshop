@@ -1,7 +1,9 @@
 # Referencia 05: modelo y dos paginas
 
-Esta es una referencia de construccion, no un modelo desplegado ni un `.pbix`.
-Completala despues del intento del [modulo 05](../docs/modulos/05-modelo-informe.md).
+Copilot utiliza esta referencia al desplegar el
+[modulo 05](../docs/modulos/05-modelo-informe.md): modelo con
+`semantic-model-authoring`, informe con `powerbi-report-cli`. El documento
+no es un modelo desplegado ni un `.pbix`.
 
 ## Decisiones de referencia
 
@@ -63,5 +65,5 @@ con DISTINCTCOUNT mientras sigues sumando ingresos duplicados.
 
 No hay cifras publicadas aqui: dependen de la ejecucion y configuracion reales.
 No se incluye un PBIP ficticiamente funcional sin su conexion y definicion
-de informe. La autoria por MCP/portal debe guardarse y validarse en el entorno
-autorizado antes de marcar este modulo como terminado.
+de informe. La autoria debe guardarse, desplegarse y validarse mediante las herramientas
+soportadas antes de marcar este modulo como terminado.

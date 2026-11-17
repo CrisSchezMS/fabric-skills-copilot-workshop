@@ -1,13 +1,13 @@
 {
   "artifact_kind": "conceptual-mapping-not-fabric-api-payload",
   "name": "workshop_ventas_ontology",
-  "target_experience": "V2 through Fabric portal, not legacy V1 JSON",
+  "target_experience": "Explicit legacy V1 authoring through ontology-cli; not V2 chat",
   "entities": [
     {
       "name": "Productos",
       "source_table": "workshop_products",
       "key": "product_id",
-      "properties": ["product_id", "product_name", "category", "list_price"]
+      "properties": ["product_id", "product_name", "category"]
     },
     {
       "name": "Tiendas",
@@ -21,7 +21,7 @@
       "key": "sale_id",
       "properties": [
         "sale_id", "sale_date", "product_id", "store_id", "channel",
-        "quantity", "unit_price", "discount_rate", "net_amount"
+        "quantity"
       ]
     }
   ],
@@ -33,6 +33,8 @@
     "Validar claves unicas y no nulas en las tres entidades antes de vincular.",
     "No enlazar las ventas raw como si fueran lineas elegibles.",
     "Los tipos de entidad no son tablas nuevas; las relaciones no generan datos.",
-    "No inventar clientes, pedidos, inventario, costes ni coordenadas."
+    "No inventar clientes, pedidos, inventario, costes ni coordenadas.",
+    "No vincular decimales como Double: los importes exactos permanecen en tablas y modelo.",
+    "V1 authoring no permite prometer consumo natural V2; comprobar version y disponibilidad reales."
   ]
 }

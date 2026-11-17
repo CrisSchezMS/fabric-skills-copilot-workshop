@@ -1,38 +1,35 @@
-# Referencia 06: entidades y relaciones
+# Referencia 06: autoria conectada de ontologia
 
-Es un mapa revisable para aplicar manualmente en la experiencia V2 del portal,
-no una definicion V1 ni un archivo importable. Consulta el
-[modulo y su limite de skill](../docs/modulos/06-ontologia.md).
+Copilot utiliza `ontology-cli`, esquema real y
+`plantillas/ontologia.json` en el [modulo 06](../docs/modulos/06-ontologia.md).
+La ruta revisada es **legacy V1 explicita**, no autoria V2 ni chat V2.
 
-| Entidad | Fuente | Identidad de negocio |
-|---|---|---|
-| Productos | workshop_products | product_id |
-| Tiendas | workshop_stores | store_id |
-| LineasVenta | workshop_sales_clean | sale_id |
+| Entidad | Fuente | Clave | Propiedades adicionales |
+|---|---|---|---|
+| Productos | workshop_products | product_id | product_name, category |
+| Tiendas | workshop_stores | store_id | store_name, city |
+| LineasVenta | workshop_sales_clean | sale_id | sale_date, product_id, store_id, channel, quantity |
 
-Productos incluye product_name, category y list_price; Tiendas incluye
-store_name y city. LineasVenta incluye fecha, claves dimensionales, canal,
-cantidad, precio, descuento e importe neto, ademas de su identificador.
-El mapa detallado esta en `plantillas/ontologia.json`.
+Relaciona LineasVenta con Productos por product_id y con Tiendas por store_id.
+Ambas contextualizaciones se basan en el detalle limpio. No inventes una
+entidad Pedido ni enlaces raw como si fuera negocio elegible.
 
-Las relaciones se orientan desde LineasVenta a las dimensiones:
-`correspondeA` empareja product_id con product_id;
-`ocurreEn` empareja store_id con store_id. Varias lineas pueden apuntar al
-mismo producto o tienda, pero cada linea apunta a uno solo de cada.
+La V1 de la skill no ofrece decimal: se omiten precios, descuento e importe,
+sin convertirlos a Double. Esos datos permanecen exactos en tablas y modelo.
+Los tipos de entidad no son tablas nuevas ni fabrican observaciones.
 
-El tipo ontologico no cambia la granularidad de origen. Crear otra entidad
-llamada Pedido no fabrica un identificador de pedido ni una relacion real.
-Las categorias y ciudades son propiedades canonicas de las dimensiones.
+Copilot descubre las fuentes, genera el arbol de definicion completo y su
+mapa estable de IDs de concepto, presenta preview, obtiene `yes` y ejecuta
+la creacion. Relee `getDefinition`, decodifica partes y contrasta claves,
+tipos y bindings. El mapa de conceptos puede versionarse sin bindings de tenant;
+payloads, IDs de recursos y snapshots del entorno se conservan privados.
+Un fallo de escritura consume el intento: nuevo preview antes de repetir.
 
-Antes de guardar, revisa cada binding en el portal: Lakehouse, esquema, tabla,
-columna y tipo. Compara los identificadores seleccionados con la unicidad
-verificada en Spark. Si un servicio no admite un binding o tipo, declara
-la limitacion en vez de convertir el importe a float o inventar otro origen.
+Vincular y refrescar/materializar instancias pueden ser pasos distintos:
+marca el estado real de cada uno. Si solo hay herramientas de autoria,
+no declares validada una consulta que no se ha ejecutado.
+Para consulta V2 autorizada se exige `ask_ontology` por Ontology Agent MCP;
+no uses SQL/KQL/PySpark ni `search_ontology` como sustituto.
 
-En la consulta de V2 con ontology-cli, solo `ask_ontology` por Ontology Agent
-MCP permite seguir la ruta de grounding documentada. Si no esta disponible,
-la consulta de ese tramo queda pendiente; responder desde SQL no prueba que
-la ontologia funcione. Preguntar por costes o clientes debe revelar que
-esas entidades/propiedades no existen en el escenario.
-
-No se han creado entidades ni relaciones por guardar este documento.
+Si el servicio requiere V2 y la skill no la crea, informa del bloqueo sin
+eludir el limite. Continua las otras ramas del taller.

@@ -1,106 +1,120 @@
-# Laboratorio: de una pregunta a una transformacion revisable
+# Laboratorio: dile el workspace y construye con Copilot
 
-Ejecuta antes el notebook 01 en Fabric. En Copilot abre la raiz del repositorio.
-No abras la solucion al principio. Los bloques siguientes son prompts copiables,
-no comandos que se ejecuten por si solos.
+Abre la raiz del repo. Completa la [preparacion](preparacion.md).
+Cada bloque es un prompt para Copilot, no un comando que se autoejecute.
+Los nombres reales y evidencias se quedan en tu sesion privada.
 
-## 1. Separar instrucciones, skills y herramientas
-
-```text
-Estoy empezando con Copilot. Lee .github/copilot-instructions.md y docs/datos.md.
-Explica que aportan las instrucciones del repo, la skill local workshop-ventas
-y las Microsoft Fabric Skills oficiales. Indica cuales tienes disponibles y
-si realmente puedes acceder a mi Fabric. No ejecutes ni modifiques nada.
-```
-
-Resultado esperado: una explicacion basada en archivos y capacidades reales.
-No basta con que Copilot diga que conoce Fabric: debe distinguir tener
-instrucciones de disponer de herramientas conectadas y permisos.
-
-## 2. Perfilar antes de limpiar
+## 1. Conectar por nombre y decidir el alcance
 
 ```text
-Usa la Fabric Skill spark-cli si esta instalada. A partir del contrato de datos,
-propone celdas PySpark para perfilar las tablas del taller en mi Lakehouse
-predeterminado. Comprueba primero el esquema. Necesito recuento raw, ventas
-distintas, copias, nulos, cantidades invalidas y productos huerfanos.
-Distingue ventas unicas de incidencias raw y no inventes cifras.
-Solo prepara la propuesta: no consultes ni modifiques mi entorno.
+Mi workspace es "<nombre de tu workspace>". Quiero desplegar el taller completo.
+Usa workshop-ventas. Lee docs/datos.md, docs/contrato-analitico.md y
+docs/despliegue.md. Explica brevemente instrucciones, skills y herramientas.
+Te autorizo a descubrir ese workspace, items, capacidad y esquemas en lectura.
+Resuelve los IDs, comprueba los permisos y prepara el inventario de despliegue.
+Si hay varios Lakehouses, pide elegir. Quiero un Lakehouse dedicado al taller.
+Si faltan datos, incluye crear el Lakehouse necesario e importar y ejecutar
+el notebook 01 sin modificarlo. No escribas antes de presentar el alcance.
 ```
 
-Revisa los nombres y ejecuta manualmente las celdas aprobadas en un notebook de
-Fabric con el mismo Lakehouse. Si decides usar herramientas conectadas, autoriza
-por separado el alcance de solo lectura y confirma el destino.
+Copilot debe mostrar un destino real y los requisitos por artefacto, no afirmar
+que tiene acceso solo porque conoce una skill. Revisa colisiones, capacidad,
+servicios preview, nombres y costes de ejecucion.
 
-## 3. Acordar las reglas
+## 2. Aprobar e iniciar
+
+Elige **una** ruta de ingenieria: [Spark](modulos/03-base-analitica.md)
+o [Project Osmos](modulos/04-project-osmos.md). Tras revisar el plan:
 
 ```text
-Propone un plan de limpieza para estos datos. Que filas se recuperan con las
-dimensiones y cuales se excluyen? Como evitas contar dos veces una venta?
-Que haces si hay dos versiones diferentes de un sale_id? Explica el descuento,
-el uso de decimal y cuando se redondea. No generes ni ejecutes cambios todavia.
+Apruebo el inventario de creacion, ejecucion y validacion que acabas de mostrar.
+Elijo Spark para la base analitica. Ejecuta las operaciones aprobadas en ese
+workspace/Lakehouse y continua despues con modelo, informe, ontologia, Data
+Agent y App. No quiero solo codigo ni instrucciones manuales.
+Respeta los gates especificos de cada skill. No instales nada no acordado,
+no sobrescribas, borres, compartas ni cambies permisos o capacidad.
 ```
 
-Compara con `docs/datos.md`. No aceptes eliminar todas las filas con nulos ni
-elegir una version arbitraria de una venta con contenido distinto.
+Si prefieres Osmos, sustituye la eleccion; Copilot verifica elegibilidad e
+intake antes de lanzar una unica tarea. La aprobacion no elimina las revisiones
+obligatorias del informe o de la ontologia.
 
-## 4. Generar y revisar codigo
+## 3. Crear, ejecutar y entender la base
 
 ```text
-Con las reglas acordadas y usando spark-cli si esta disponible, genera las
-celdas PySpark para crear un DataFrame sales_clean en memoria. Usa la sesion
-spark existente. No alteres las tablas raw, no instales paquetes ni guardes
-tablas nuevas. Anade comprobaciones de claves, unicidad e ingresos. Explica
-como ejecutarlo manualmente en Fabric; no lo ejecutes desde este chat.
+Continua el alcance aprobado usando spark-cli en modo authoring.
+Usa las fuentes del repo y tools/build_deployment_notebook.py para construir
+el notebook operativo fuera del repo, con esquema y Lakehouse descubiertos.
+Crealo como workshop_03_base_analitica, vincula el Lakehouse y ejecutalo.
+Comprueba primero el esquema. Necesito raw, sale_id distintos, copias,
+nulos, cantidades invalidas y productos/tiendas huerfanos. Separa incidencias
+raw de las observadas sin copias; si hay versiones de un sale_id, detente.
+Publica los tres destinos exactos aprobados, sin overwrite. Espera al job,
+relee las tablas y reconcilia filas, unidades e ingresos decimales.
 ```
 
-Ejecuta el codigo revisado en Fabric. Compara el resultado con el informe del
-notebook 01; con parametros originales tambien con `docs/expected-results.json`.
-Los ingresos deben coincidir exactamente a dos decimales, no aproximadamente.
+Copilot no debe quedarse en una celda con escritura desactivada. El notebook
+se ejecuta tras la aprobacion, recupera categoria/ciudad de dimensiones y guarda
+Delta. Las fuentes raw no se modifican. Compara los resultados observados con
+el informe real del generador; el JSON solo aplica a su configuracion original.
 
-## 5. Contrastar con T-SQL (opcional)
+Para contrastar por otra herramienta:
 
 ```text
-Usa sqldw-cli si esta disponible y revisa los ejemplos de sql/. Explica por que
-se ejecutan en el SQL analytics endpoint y no como Spark SQL. Antes del resumen,
-comprueba las consultas de validacion de claves. No ejecutes SQL desde el chat.
+Usa sqldw-cli y el SQL analytics endpoint descubierto del mismo Lakehouse.
+Ejecuta descubrimiento de esquema, perfilado, validacion de claves y resumen
+de sql/ en ese orden, cada SELECT por separado. Adapta el esquema al real.
+Si falla la validacion de claves, detente antes del resumen.
+Compara ingresos por categoria con Spark bajo los mismos filtros.
 ```
 
-En el SQL analytics endpoint del Lakehouse:
+Estas consultas son de lectura. T-SQL no escribe las tablas Delta.
 
-1. Ejecuta `sql/01_descubrir_tablas.sql` y confirma el esquema.
-2. Selecciona y ejecuta cada consulta de `sql/02_perfilado.sql` por separado.
-3. Ejecuta cada consulta de `sql/03_validar_claves.sql`: deben devolver cero filas.
-   Si alguna devuelve filas, detente antes del resumen.
-4. Ejecuta `sql/04_ventas_por_categoria.sql` y compara los ingresos.
-
-Los ejemplos suponen `dbo`. Si descubriste otro esquema, revisalos antes de usar.
-En un cliente MCP que solo devuelve el ultimo resultado del lote, enviar varias
-SELECT juntas puede ocultar los primeros resultados.
-
-## Cierre
-
-Explica con tus palabras que hizo Copilot, que aporto la skill y que tuviste
-que verificar. Si necesitas la referencia, importa
-`soluciones/02_limpiar_y_analizar.ipynb` en el mismo Lakehouse.
-
-## 6. Pasar de analizar a crear
-
-El ejercicio no termina necesariamente con un resumen en memoria. Sigue
-[el recorrido avanzado](modulos-avanzados.md) para crear una base persistida,
-un modelo con informe, ontologia, Data Agent y Native App. El generador se
-mantiene como punto de partida comun.
+## 4. Crear el modelo y el informe
 
 ```text
-Lee docs/modulos-avanzados.md y docs/contrato-analitico.md. Quiero continuar
-con el modulo 03 para preparar una base reutilizable por Power BI.
-Usa spark-cli si esta instalada. Primero genera codigo local y un plan de
-publicacion de los tres destinos exactos; no consultes ni modifiques Fabric.
-Incluye validaciones antes/despues, proteccion de todos los destinos y
-explicacion de la reejecucion. No abras soluciones/ hasta que te lo pida.
+Continua el modulo 05. Con semantic-model-authoring, crea y despliega
+workshop_ventas_model Direct Lake desde las tablas validadas. Aplica las
+relaciones, nombres y medidas de plantillas/modelo-semantico.json.
+Ejecuta validar-modelo.dax y contrasta con Spark.
+Despues usa powerbi-report-cli para planificar el informe de dos paginas
+de plantillas/informe.json. Guarda la especificacion y pide mi aprobacion.
 ```
 
-Puedes elegir [Project Osmos](modulos/04-project-osmos.md) como alternativa
-de ingenieria completa, no como una segunda carga sobre los mismos destinos.
-La creacion de cada artefacto posterior tiene requisitos, prompts y una puerta
-de aprobacion propios. No prometas construir todo el recorrido en 60 minutos.
+Revisa y aprueba la especificacion en **otro turno**. Entonces:
+
+```text
+Apruebo la especificacion del informe que acabas de guardar.
+Continua el diseno y autoria, valida el PBIR, revisa la previsualizacion
+y publica workshop_ventas_report vinculado al modelo confirmado.
+Comprueba paginas, visuales, filtros y totales en el informe publicado.
+```
+
+## 5. Desplegar las ramas de negocio
+
+```text
+Continua los modulos 06, 07 y 08 dentro del alcance aprobado:
+ontologia con ontology-cli, Data Agent con SDK/REST oficial y Native App
+con Fabric Apps/Rayfin. No uses FabricIQ para crear informes ni Osmos para
+crear estos items. Comprueba las versiones y presenta los gates requeridos.
+Si falta instalar una herramienta, pide aprobar los paquetes y destino.
+Ejecuta y verifica lo soportado; un bloqueo de una rama no para las demas.
+```
+
+En ontologia revisa la version y preview antes del `yes` exigido por la skill.
+En Data Agent comprueba publicacion **y** respuestas reales. En Native App
+revisa los recursos que `up` aprovisiona y valida la URL publicada con SSO.
+No basta un JSON, un chatbot simulado o una pantalla local.
+
+## 6. Cerrar o reanudar con evidencia
+
+```text
+Muestra el inventario final con nombres, enlaces privados, estado real y
+comprobacion realizada. Separa creado, ejecutado, validado y bloqueado.
+Explica cualquier diferencia con el plan, que recursos consumen capacidad
+y como detener las sesiones. No borres recursos.
+```
+
+Para reanudar otra sesion, indica el mismo workspace y pide descubrir/verificar
+lo ya creado antes de continuar. No vuelvas a ejecutar el publicador sobre
+tablas existentes. Sigue [el procedimiento de reanudacion](despliegue.md).

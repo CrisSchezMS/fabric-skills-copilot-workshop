@@ -1,49 +1,67 @@
 ---
 name: workshop-ventas
-description: Guia el taller de ventas y sus modulos de base analitica, Project Osmos, Power BI, ontologia, Data Agent y Native App. No sustituye a las Microsoft Fabric Skills oficiales.
+description: Despliega el taller de ventas en un workspace indicado por nombre usando Fabric Skills, Project Osmos y herramientas oficiales. Descubre, pide aprobacion, ejecuta y verifica artefactos reales.
 ---
-# Ejercicio guiado de ventas
+# Taller conectado: del nombre del workspace a una solucion funcionando
 
-Esta es una skill LOCAL del taller, no una skill oficial de Microsoft.
-Orquesta el contexto educativo; para APIs y codigo Fabric utiliza las skills
-oficiales instaladas. No las instala ni proporciona herramientas o autenticacion.
+Skill LOCAL del taller. Coordina las Microsoft Fabric Skills oficiales; no las
+instala, no proporciona credenciales y no sustituye sus procedimientos.
 
-1. Lee `docs/datos.md` y `docs/laboratorio.md` antes de proponer una solucion.
-2. Pregunta si se quiere generar codigo local o actuar contra un entorno Fabric.
-   Si se pide actuar, confirma Lakehouse/endpoint y herramientas disponibles.
-   No descubras ni cambies recursos remotos por iniciativa propia.
-3. Para notebooks/PySpark usa la skill oficial `spark-cli`, si esta disponible.
-   Para T-SQL de solo lectura usa `sqldw-cli`, si esta disponible.
-   Si falta, declara la limitacion en vez de simular haberla usado.
-4. Empieza por perfilado: filas, claves distintas, copias, nulos, cantidades
-   invalidas y relaciones huerfanas. Distingue incidencias raw y ventas unicas.
-5. Propone reglas antes de generar la transformacion. Usa dimensiones canonicas,
-   decimal y redondeo por linea. Las cancelaciones quedan fuera de ingresos.
-6. Espera aprobacion antes de ejecutar cambios remotos o sobrescribir archivos.
-   Generar codigo no significa ejecutarlo; una respuesta no prueba un resultado.
-7. Pide al asistente del taller que compare con el informe del notebook 01.
-   No abras `soluciones/` salvo que el usuario pida ver la solucion.
-8. Explica como comprobar recuentos, unicidad e ingresos. Si no has ejecutado,
-   declara que el resultado es una propuesta pendiente de validacion.
+## Flujo principal
 
-## Ampliaciones opcionales
+1. Lee `docs/datos.md`, `docs/contrato-analitico.md` y `docs/despliegue.md`.
+   El objetivo normal es desplegar y ejecutar, no limitarse a escribir propuestas.
+2. Recoge el nombre del workspace. Si ya se proporciono, usalo. Descubre sus IDs
+   mediante herramientas autenticadas: lista workspaces con paginacion y filtra
+   displayName exacto. Si hay ambiguedad, pide elegir. Catalog Search busca items,
+   no workspaces. Resuelve Lakehouse y esquema reales; no pidas IDs al principiante.
+3. Inventaria skills, herramientas, identidad, permisos efectivos y capacidad.
+   Una skill instalada o un rol visible no prueban acceso a todos los servicios.
+   Explica bloqueos por artefacto con la respuesta real, sin inventar resultados.
+4. Presenta nombres, dependencias, lecturas, escrituras, coste de capacidad y
+   recursos de App del alcance concreto. Obtiene aprobacion antes de escribir.
+   No vuelvas a pedir aprobacion generica para cada comando ya cubierto.
+   Respeta ademas los gates obligatorios de cada skill: especificacion del
+   informe en otro turno; preview y `yes` de ontologia; intake de Osmos.
+5. Ejecuta las operaciones aprobadas con las skills correspondientes. Guarda,
+   arranca, espera operaciones largas y relee los resultados. El codigo mostrado
+   o guardado localmente no completa un despliegue. No dejes flags desactivados
+   como entrega final cuando se ha autorizado ejecutar.
+6. Valida contra fuentes reales, registra IDs/enlaces/estado fuera del repo
+   publico y continua las dependencias disponibles. Un bloqueo de ontologia
+   no debe detener el informe, Data Agent ni App.
+7. En una reanudacion, descubre y verifica lo ya creado. No sobrescribas, borres,
+   cambies nombres o repitas creaciones de resultado ambiguo automaticamente.
+   Informa de publicacion parcial y pide una decision concreta.
 
-Lee `docs/modulos-avanzados.md`, `docs/contrato-analitico.md` y el modulo elegido.
-Reutiliza el modo local/manual/conectado que haya indicado el usuario; no vuelvas
-a preguntar si ya esta resuelto. La preparacion local no autoriza descubrimiento,
-autenticacion ni ejecucion remota.
+## Enrutamiento
 
-- 03 o 04 publican los mismos tres destinos: son alternativas, no dos cargas
-  consecutivas. Conserva el generador y las fuentes originales.
-- Para 04 utiliza `project-osmos`, si esta disponible, con un encargo completo
-  de ingenieria. Verifica sus requisitos y aprobacion antes de iniciar una tarea.
-- Para 05 utiliza `semantic-model-authoring` para el modelo. El informe tiene
-  ruta manual; no uses FabricIQ como si fuera autoria de informes.
-- Para 06 comprueba version y alcance de `ontology-cli`: no puede crear V2
-  mediante el flujo legacy V1 disponible al preparar el taller.
-- Para 07 separa metadata/Prep for AI del modelo e instrucciones del Data Agent.
-  No inventes una skill de creacion ni pares Example queries para modelo semantico.
-- Para 08 sigue Fabric Apps/Rayfin y el scaffold oficial, sin crear un supuesto
-  item App con un HTML local. Dev/up pueden aprovisionar backend en Fabric.
-- Usa las referencias de soluciones solo cuando se soliciten. Las plantillas
-  de diseno no son payloads oficiales ni prueba de un recurso creado.
+| Resultado | Skill / herramienta |
+|---|---|
+| Notebook desplegado, perfilado y tres tablas Delta | `spark-cli`, modo authoring; fuentes `src/` y constructor de notebook |
+| Mismo resultado delegado a un agente remoto | `project-osmos`, una unica tarea completa; alternativa a Spark, no segunda carga |
+| Consultas T-SQL de contraste | `sqldw-cli`, solo lectura del SQL analytics endpoint |
+| Modelo Direct Lake, relaciones y medidas | `semantic-model-authoring`, MCP de modelado o ruta de despliegue soportada por la skill |
+| Informe Power BI real | `powerbi-report-cli`, si esta instalada; plan aprobado, PBIR validado y publicacion |
+| Preguntas sobre modelo/informe existente | `fabriciq`, no autoria de informes |
+| Ontologia | `ontology-cli`, solo la version que realmente permita crear; ver modulo 06 |
+| Data Agent creado, configurado y publicado | SDK oficial `fabric-data-agent-sdk` o REST publico documentado; no inventar una skill |
+| Fabric Native App | Scaffold y CLI oficial Fabric Apps/Rayfin, con SSO y conector delegado |
+
+Si falta una skill, indica cual y pide aprobacion para instalarla; no simules
+su uso ni saltes sus limites mediante una API improvisada. Native App y Data
+Agent tienen rutas oficiales propias aunque no haya una skill dedicada.
+
+## Invariantes
+
+- Conserva el notebook generador y las tres tablas originales.
+- Comprueba esquemas antes de perfilar; separa incidencias raw, copias y ventas
+  unicas. Ante sale_id nulo o versiones diferentes, detente.
+- Dimensiones canonicas, completed, cantidad positiva, claves validas,
+  decimal y redondeo por linea. Lee el contrato; no inventes metricas.
+- Escribe solo los destinos exactos aprobados. Delta con `errorifexists`,
+  todos los destinos comprobados antes de escribir y reconciliacion posterior.
+- No crees workspaces, cambies permisos/capacidad/tenant ni instales herramientas
+  implicitamente. Los recursos internos de Rayfin requieren alcance aprobado.
+- Si se pide expresamente solo preparar o no conectar, respeta ese modo.
+  Una peticion de editar este repo tampoco autoriza actuar sobre un tenant.

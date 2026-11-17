@@ -1,66 +1,62 @@
-# 03 - Crear una base analitica reutilizable con Spark
+# 03 - Copilot crea y ejecuta la base analitica con Spark
 
-**Objetivo:** dejar de calcular solo en memoria y crear una base que puedan
-consumir Power BI, ontologia y aplicaciones. Usa `spark-cli`, no T-SQL para
-escribir en el Lakehouse.
+**Entrega:** item `workshop_03_base_analitica` ejecutado y tablas
+`workshop_sales_clean`, `workshop_sales_daily`, `workshop_calendar` publicadas.
+No se queda en un DataFrame ni en un notebook con escritura desactivada.
 
-## Preparacion y entregables
+Completa descubrimiento y aprobacion del [runbook](../despliegue.md).
+Usa `spark-cli`, modo authoring, con sus referencias de notebook/API.
+Los origenes y destinos estan en los contratos
+[original](../datos.md) y [analitico](../contrato-analitico.md).
 
-Necesitas las tres tablas del notebook 01 y un Lakehouse dedicado. Lee
-[el contrato original](../datos.md) y [el analitico](../contrato-analitico.md).
-Los destinos propuestos son `workshop_sales_clean`, `workshop_sales_daily`
-y `workshop_calendar`. No se modifica ninguna tabla original.
-
-## Reto y prompts
-
-Primero pide un diseno, sin consultar Fabric:
+## Encargo ejecutable
 
 ```text
-Usa spark-cli. Lee docs/datos.md y docs/contrato-analitico.md.
-Disena las tres tablas derivadas: granularidad, claves, tipos y consumidores.
-Explica por que no se debe unir el agregado al detalle para sumar ingresos.
-Prepara celdas que comprueben Lakehouse y esquema, validen los tipos de origen,
-limpien en memoria y reconcilien detalle y agregado. No ejecutes ni escribas.
-No abras soluciones/ todavia.
+Ejecuta el modulo 03 en el workspace/Lakehouse ya descubiertos y aprobados.
+Usa spark-cli en modo authoring. Conserva el notebook generador y las fuentes.
+Comprueba que no existe workshop_03_base_analitica ni ninguna de las tres
+tablas derivadas. Genera el notebook autonomo con tools/build_deployment_notebook.py
+en una ruta privada fuera del repo; usa el esquema e ID del Lakehouse reales.
+Crea el item Notebook con su definicion, configura ese Lakehouse como
+predeterminado y relee el binding antes de arrancar el job.
+Ejecutalo, sigue el job hasta estado final y lee sus resultados.
+No respondas solo con el codigo: quiero las tablas persistidas y verificadas.
 ```
 
-Revisa el codigo antes de decidir si vas a ejecutarlo manualmente. Despues:
+Copilot rellena los argumentos del constructor; no te pide IDs.
+El archivo local no se sube a Git. La API y formato de definicion del notebook
+se toman de la skill instalada, no del JSON de una plantilla de diseno.
 
-```text
-Prepara una celda de publicacion desactivada por defecto. Debe listar los tres
-destinos, comprobarlos TODOS antes de escribir, fallar si cualquiera existe
-y usar Delta con errorifexists. No incluyas overwrite, borrado ni CREATE SCHEMA.
-Despues de guardar, compara recuentos, unidades e ingresos exactos con la entrada.
-Explica que un fallo intermedio no se revierte automaticamente. No ejecutes.
-```
+## Que hace el notebook al ejecutarse
 
-## Trabajo en Fabric
+1. Verifica el Lakehouse esperado y columnas/tipos reales de las tres fuentes.
+2. Perfila filas raw, sale_id distintos no nulos, contenidos distintos, copias,
+   conflictos, nulos, cantidades no positivas y claves huerfanas.
+3. Muestra incidencias tanto raw como sobre filas sin copias. Estas ultimas
+   solo equivalen a ventas unicas si no hay conflictos; nunca se suman para
+   calcular rechazos porque pueden solaparse.
+4. Comprueba dimensiones, quita copias exactas y detiene sale_id nulo/conflictivo.
+   Limpia con dimensiones canonicas, completed, cantidad positiva y claves validas.
+5. Calcula importe decimal con redondeo por linea, agregado y calendario.
+   Reconcilia lineas, unidades e ingresos antes de guardar.
+6. Comprueba los tres destinos antes de cualquier escritura, usa Delta
+   `errorifexists`, relee las tablas y repite reconciliacion.
 
-1. Abre un notebook PySpark con el Lakehouse del generador como predeterminado.
-2. Confirma su esquema y las columnas/tipos reales. No corrijas un destino
-   desconocido creando otro esquema.
-3. Ejecuta perfilado y limpieza en memoria con las reglas acordadas.
-4. Construye el agregado por fecha, producto, tienda y canal, y un calendario
-   diario continuo con los anios completos observados.
-5. Compara los totales con el informe del notebook 01. Si cambiaste parametros,
-   ese informe prevalece sobre el JSON de referencia del repositorio.
-6. Revisa destinos y autoriza la escritura solo entonces. Lee las tablas
-   guardadas y reconcilia otra vez.
+La autorizacion se obtiene **antes del arranque**. El notebook operativo
+publica directamente cuando se ejecuta; no exige editar un flag y relanzarlo.
+Los helpers de bajo nivel conservan su proteccion de aprobacion.
 
-## Comprobaciones y cierre
+## Aceptacion y continuidad
 
-El detalle debe tener `sale_id` unico, claves validas, cantidades positivas,
-estado completed y categoria/ciudad canonicas. Las copias no aumentan ingresos.
-La suma de `sales_count`, `units` y `net_revenue` debe coincidir con el detalle.
-El calendario no puede tener dias repetidos ni saltos.
+Compara con el informe observado del generador. El calendario debe cubrir
+anios completos y dias contiguos; sale_id debe ser unico; no hay lineas
+canceladas, cantidades invalidas ni claves sin dimension en el detalle.
+Verifica el estado final del job y existencia/lectura de las tres tablas,
+no solo el mensaje de publicacion.
 
-Reejecutar la publicacion debe detenerse antes de escribir si existe alguno
-de los destinos. No lo compruebes activando sobrescritura. Una publicacion
-parcial exige revision, no limpieza automatica.
+Una segunda ejecucion de publicacion debe bloquearse por destinos existentes.
+No la lances como prueba en vivo sin necesidad: ya es una proteccion local
+probada. Ante carga parcial, sigue la reanudacion del runbook, sin borrar.
 
-**Cierre:** puedes mostrar el linaje original -> detalle -> agregado y explicar
-la granularidad de cada tabla sin confundir filas, unidades y pedidos.
-
-**Referencia, solo despues del intento:** pide abrir
-`soluciones/03_publicar_analitica.ipynb`. Es autonomo, incorpora las funciones
-de limpieza y viene con `SCHEMA = None` y `WRITE_ANALYTICS = False`.
+Continua con [modelo e informe](05-modelo-informe.md) y
+[ontologia](06-ontologia.md). No ejecutes despues Osmos sobre estos destinos.

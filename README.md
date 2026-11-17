@@ -1,135 +1,120 @@
-# GitHub Copilot + Microsoft Fabric Skills: de datos a aplicaciones
+# Copilot + Fabric Skills: despliega una solucion de ventas
 
-Workshop con una **ruta basica de 60 minutos y modulos avanzados opcionales**,
-en espanol, para personas que estan empezando con Microsoft Fabric y Copilot.
+Taller en espanol para principiantes. **Indica el nombre de tu workspace y pide
+a Copilot que construya alli la solucion**, usando las Microsoft Fabric Skills
+y herramientas oficiales. Copilot descubre los recursos, comprueba acceso,
+presenta el alcance, obtiene tu aprobacion, despliega, ejecuta y verifica.
+No es un ejercicio de copiar celdas que se quedan sin ejecutar.
 
-**Caso:** partir de las ventas de una tienda ficticia para crear una base
-analitica, un modelo semantico, un informe Power BI, una ontologia, un Data Agent
-y una **Fabric Native App**. Project Osmos ofrece una ruta alternativa de
-ingenieria de datos autonoma. Cada modulo produce artefactos y exige validarlos;
-no se pretende construirlos todos en una hora.
-Todos los datos se generan desde cero; no se usan datos de personas ni empresas.
+El caso es una tienda ficticia. Partiendo de tres tablas sinteticas se crean:
 
-## Empieza por aqui: genera tus datos
-
-No necesitas instalar Python, Git ni Copilot para este primer paso.
-
-1. Descarga [01_generar_datos_sinteticos.ipynb](https://raw.githubusercontent.com/CrisSchezMS/fabric-skills-copilot-workshop/main/notebooks/01_generar_datos_sinteticos.ipynb)
-   (en GitHub tambien puedes abrir el archivo y elegir **Download raw file**).
-2. En un workspace de Fabric con capacidad activa, crea un **Lakehouse vacio
-   dedicado al taller**, por ejemplo `lh_workshop_ventas`. Necesitas permisos
-   para crear notebooks y escribir tablas; no necesitas ser administrador.
-3. Importa el `.ipynb` en Fabric como notebook y adjunta ese Lakehouse como
-   **predeterminado**. Usa el kernel **PySpark**.
-4. Revisa la celda de parametros. Para Lakehouses con esquemas deja
-   `SCHEMA = "dbo"`; para uno antiguo sin esquemas usa `SCHEMA = ""`.
-5. Pulsa **Ejecutar todo**. No hacen falta paquetes adicionales ni conexion a
-   origenes externos. Comprueba el informe final y las tres tablas en **Tables**.
-
-| Tabla | Contenido por defecto |
+| Resultado en Fabric | Como lo construye Copilot |
 |---|---|
-| `workshop_products` | 12 productos en 4 categorias |
-| `workshop_stores` | 4 tiendas ficticias |
-| `workshop_sales_raw` | 10.200 filas: 10.000 ventas y 200 copias exactas |
+| Notebook y tablas limpias, agregado diario y calendario | `spark-cli` **o** una tarea completa de `project-osmos` |
+| Modelo estrella Direct Lake y cuatro medidas | `semantic-model-authoring` |
+| Informe Power BI de dos paginas, el dashboard del taller | `powerbi-report-cli` |
+| Ontologia con tres entidades y dos relaciones | `ontology-cli`, respetando su version soportada |
+| Fabric Data Agent publicado y evaluado | SDK oficial o REST publico de Data Agent |
+| Fabric Native App con SSO y consulta al modelo | Scaffold y CLI oficial Fabric Apps/Rayfin |
 
-El notebook incorpora sus funciones: se puede compartir y ejecutar por separado,
-sin descargar el resto del repositorio. La semilla y las fechas fijas permiten
-reproducir la misma demo. Introduce errores controlados para practicar su deteccion.
+Las skills no conceden acceso. Hacen falta herramientas autenticadas, permisos,
+capacidad y funcionalidades habilitadas. Si falta algo, Copilot identifica
+**el bloqueo de ese artefacto** y sigue con las ramas disponibles; no inventa
+un despliegue. Consulta los [requisitos](docs/preparacion.md) y
+[limites de version](docs/referencias-avanzadas.md).
 
-**Proteccion:** si alguna tabla ya existe, se detiene antes de escribir ninguna.
-Para repetir, usa otro Lakehouse o revisa y cambia `ALLOW_OVERWRITE = True`.
-La sobrescritura reemplaza solo esas tres tablas, incluidos sus esquemas.
-Las tres escrituras no son atomicas: un fallo puede dejar una carga parcial.
-La demo consume capacidad Fabric; deten la sesion Spark desde la interfaz al acabar.
-
-## Prepara Copilot y las Fabric Skills
-
-Abre este repositorio como carpeta en VS Code, no solo el notebook suelto:
+## 1. Abre el repositorio y prepara la conexion
 
 ```powershell
 git clone https://github.com/CrisSchezMS/fabric-skills-copilot-workshop.git
 Set-Location fabric-skills-copilot-workshop
-code .
+copilot
 ```
 
-Consulta [la preparacion paso a paso](docs/preparacion.md). Hay dos rutas:
+Antes necesitas Copilot CLI y las Fabric Skills instaladas. Sigue
+[Preparacion](docs/preparacion.md): la ruta principal es **conectada para cada
+participante**, no una conexion opcional reservada a facilitacion.
 
-- **Copilot CLI en la terminal de VS Code:** instalacion oficial mediante plugin.
-- **Chat de VS Code:** instalacion de las skills con APM; el modo basico solo
-  genera codigo y no requiere conectar MCP ni dar acceso al workspace.
+Las instrucciones del repo aportan las reglas de negocio; la skill local
+`workshop-ventas` coordina el recorrido; las skills oficiales aportan los
+procedimientos de cada producto. Las herramientas y tu identidad ejecutan
+las operaciones reales. Clonar este repo no autentica ni autoejecuta nada.
 
-No confundas las **instrucciones del repo**, las **skills especializadas** y las
-**herramientas/autenticacion**. Clonar este repo no instala las Fabric Skills,
-no concede permisos y no conecta con tu tenant. Nada se autoejecuta al abrirlo.
+## 2. Da el nombre del workspace a Copilot
 
-## Material incluido
-
-| Archivo o carpeta | Para que sirve |
-|---|---|
-| [Notebook 01](notebooks/01_generar_datos_sinteticos.ipynb) | Generar datos y guardar las tres tablas Delta |
-| [Preparacion](docs/preparacion.md) | Requisitos, instalacion y comprobaciones previas |
-| [Laboratorio](docs/laboratorio.md) | Prompts copiables para explorar, planificar y limpiar |
-| [Recorrido avanzado](docs/modulos-avanzados.md) | Seis modulos para construir artefactos, con requisitos y limites |
-| [Contrato analitico](docs/contrato-analitico.md) | Nuevas tablas y consumidores propuestos, separados del raw |
-| [Plantillas](plantillas/) | Encargo Osmos, diseno del modelo/informe/ontologia, evaluacion del agente y adaptador Native App |
-| [Guion de 60 minutos](docs/guion-facilitacion.md) | Orden de la demo, tiempos y plan alternativo |
-| [Contrato de datos](docs/datos.md) | Columnas, incidencias y reglas de negocio |
-| [Resultados esperados](docs/expected-results.json) | Recuentos e ingresos con la configuracion original |
-| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Contexto general que se comparte con Copilot |
-| [.github/instructions/](.github/instructions) | Reglas especificas para SQL, PySpark y notebooks |
-| [Skill local del taller](.github/skills/workshop-ventas/SKILL.md) | Ejemplo original de una skill que guia el ejercicio |
-| [SQL](sql/) | Descubrimiento, perfilado, validacion de claves y resumen T-SQL |
-| [Solucion opcional](soluciones/02_limpiar_y_analizar.ipynb) | Referencia PySpark; lee datos, no guarda tablas |
-| [Publicacion opcional](soluciones/03_publicar_analitica.ipynb) | Referencia autonoma; escritura desactivada y sin sobrescritura |
-| [Referencias avanzadas](soluciones/) | Construccion guiada de modelo, informe, ontologia, agente y Native App |
-| [Desarrollo](docs/desarrollo.md) | Fuentes, regeneracion y pruebas locales/CI |
-
-La skill local **no es una Microsoft Fabric Skill oficial** y no sustituye su
-instalacion. No se incluyen copias de las skills oficiales ni configuraciones
-con credenciales. Las recomendaciones de extensiones de VS Code son opcionales.
-
-## Que puedes construir despues
-
-| Ruta | Artefacto |
-|---|---|
-| [Spark guiado](docs/modulos/03-base-analitica.md) **o** [Project Osmos](docs/modulos/04-project-osmos.md) | Detalle limpio, agregado diario, calendario y notebook reutilizable |
-| [Modelo e informe](docs/modulos/05-modelo-informe.md) | Modelo estrella Direct Lake, cuatro medidas y dos paginas Power BI |
-| [Ontologia](docs/modulos/06-ontologia.md) | Productos, tiendas y lineas de venta con relaciones y bindings |
-| [Data Agent](docs/modulos/07-data-agent.md) | Preguntas sobre el modelo, con evaluacion y limites comprobables |
-| [Fabric Native App](docs/modulos/08-native-app.md) | Item App con SSO y consulta delegada al modelo usando Fabric Apps/Rayfin |
-
-El generador no cambia. Las extensiones son opt-in y pueden requerir capacidad
-pagada, permisos, servicios preview y preparacion administrativa adicional.
-Las skills instaladas no automatizan necesariamente cada artefacto: se indican
-las rutas manuales y los limites de version, especialmente para ontologia V2.
-Las plantillas de diseno no se presentan como payloads de Fabric ni como
-artefactos ya desplegados. Consulta [las fuentes](docs/referencias-avanzadas.md).
-
-## Primer prompt
+Copia este prompt y sustituye solo el nombre:
 
 ```text
-Soy principiante en Fabric y GitHub Copilot. Lee las instrucciones de este
-repositorio y el contrato de datos. Dime que skills tienes disponibles.
-Usa spark-cli, si esta instalada, para proponer como perfilar las tres tablas
-del taller. No inventes columnas ni resultados. No ejecutes ni modifiques
-nada todavia. Si no tienes conexion con Fabric, trabaja solo con los archivos
-locales y explicame como ejecutar la propuesta en mi notebook.
+Quiero desplegar el taller completo en mi workspace "<nombre de tu workspace>".
+Usa workshop-ventas y las Microsoft Fabric Skills disponibles. Lee las
+instrucciones, docs/datos.md, docs/contrato-analitico.md y docs/despliegue.md.
+
+Te autorizo a descubrir ese workspace, sus items, capacidad y esquemas de
+solo lectura. Resuelve los IDs tu, no me pidas que los copie. Si hay varios
+Lakehouses, ayudame a elegir el dedicado al taller. Comprueba herramientas,
+autenticacion, permisos y requisitos de cada artefacto.
+
+Quiero crear y ejecutar, no solo recibir codigo: base analitica con Spark
+o Project Osmos, modelo Direct Lake, informe Power BI, ontologia, Data Agent
+y Fabric Native App. Si faltan los datos, incluye importar y ejecutar el
+notebook generador sin modificarlo. Presenta nombres exactos, dependencias,
+recursos y coste esperado de capacidad antes de pedir mi aprobacion.
+Tras aprobar, despliega y verifica todo lo soportado. Respeta las revisiones
+obligatorias del informe, ontologia y Osmos. No sobrescribas, borres ni
+cambies permisos. Informa de los bloqueos concretos y de lo realmente creado.
 ```
 
-**Importante:** generar codigo no significa haberlo ejecutado. Las instrucciones
-son orientaciones al modelo, no una barrera de seguridad. Revisa destinos,
-permisos y cambios antes de autorizarlos.
+El nombre es suficiente para **empezar el descubrimiento**, no para saltarse
+ambiguedades o permisos. La aprobacion cubre el alcance mostrado; instalar
+herramientas, cambiar permisos o ampliar el destino necesita otra decision.
 
-## Fuentes y limites
+## 3. Generador de datos: el notebook que se conserva
 
-- [Microsoft Fabric Skills oficiales](https://github.com/microsoft/skills-for-fabric)
-- [Instrucciones personalizadas en VS Code](https://code.visualstudio.com/docs/agent-customization/custom-instructions)
-- [Notebooks en Fabric](https://learn.microsoft.com/en-us/fabric/data-engineering/how-to-use-notebook)
-- [SQL analytics endpoint](https://learn.microsoft.com/en-us/fabric/data-warehouse/sql-analytics-endpoint-performance)
+El [notebook 01](notebooks/01_generar_datos_sinteticos.ipynb) se mantiene
+**sin cambios** y es el unico notebook distribuido. Copilot puede importarlo,
+asignarle el Lakehouse predeterminado confirmado y ejecutarlo con `spark-cli`
+tras aprobar ese alcance. Tambien puedes
+[descargarlo](https://raw.githubusercontent.com/CrisSchezMS/fabric-skills-copilot-workshop/main/notebooks/01_generar_datos_sinteticos.ipynb)
+e importarlo desde Fabric.
 
-Los notebooks se distribuyen sin ejecutar y sin bindings a un workspace.
-Las pruebas locales no equivalen a una ejecucion en tu capacidad Fabric.
-Consulta las notas de [desarrollo](docs/desarrollo.md).
+Requiere un Lakehouse vacio dedicado al taller, kernel PySpark y esquema
+confirmado: `SCHEMA = "dbo"` para ese esquema existente o `""` sin esquemas.
+No necesita paquetes externos. La configuracion original genera 12 productos,
+4 tiendas y 10.200 filas raw: 10.000 lineas base y 200 copias exactas.
+Son parametros del generador, **no resultados observados en tu workspace**.
 
-Licencia [MIT](LICENSE). Material educativo independiente; no es un producto
-oficial ni implica garantias de Microsoft o GitHub.
+Si existe alguna tabla de destino, se detiene antes de escribir.
+En este recorrido no se activa `ALLOW_OVERWRITE`. Las escrituras no son
+atomicas; cualquier carga parcial se inspecciona antes de decidir.
+
+## Recorrido y materiales
+
+| Material | Uso |
+|---|---|
+| [Laboratorio conectado](docs/laboratorio.md) | Conversacion completa: descubrir, aprobar, ejecutar y cerrar |
+| [Runbook de despliegue](docs/despliegue.md) | Inventario, dependencias, gates, reanudacion y pruebas remotas |
+| [Mapa de modulos](docs/modulos-avanzados.md) | Spark/Osmos, modelo/informe, ontologia, agente y App |
+| [Contrato original](docs/datos.md) y [analitico](docs/contrato-analitico.md) | Tablas, granularidad y reglas sin inventar columnas |
+| [Plantillas](plantillas/) | Disenos e instrucciones que Copilot convierte en artefactos reales |
+| [Referencias de implementacion](soluciones/) | Decisiones de modelo, ontologia, agente y App |
+| [Guion de facilitacion](docs/guion-facilitacion.md) | Sesion conectada y recorrido completo por bloques |
+| [Desarrollo](docs/desarrollo.md) | Fuentes, constructor del notebook de despliegue y pruebas |
+
+No se distribuyen notebooks de solucion para ejecutar a mano: Copilot genera
+el notebook operativo desde `src/` con
+`python -m tools.build_deployment_notebook`, lo despliega y lo arranca.
+Los bindings y evidencias reales se guardan fuera del repositorio publico.
+Los JSON de diseno no son payloads importables ni demuestran un despliegue.
+
+Reserva varias sesiones para el recorrido completo; una hora permite
+completar un bloque conectado, no garantiza todas las previews funcionando.
+Osmos y Spark son alternativas para las mismas tablas, no cargas consecutivas.
+La ontologia no bloquea el Data Agent ni la App, que reutilizan el modelo.
+
+Las comprobaciones de este repo son locales. La validacion del despliegue
+se obtiene de las respuestas de tu Fabric durante el taller. Al terminar,
+deten las sesiones Spark; eliminar recursos requiere una decision explicita.
+
+Fuentes: [Microsoft Fabric Skills](https://github.com/microsoft/skills-for-fabric)
+y [documentacion de productos](docs/referencias-avanzadas.md).
+Licencia [MIT](LICENSE). Material educativo independiente.

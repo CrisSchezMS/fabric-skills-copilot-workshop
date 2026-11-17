@@ -1,6 +1,7 @@
 # Referencia 07: agente con evaluacion, no solo instrucciones
 
-Configura un item Data Agent nuevo con una unica fuente:
+Copilot crea, configura y publica un item Data Agent con SDK oficial o REST
+publico documentado, no como una tarea manual de portal. Usa una unica fuente:
 `workshop_ventas_model`. Revisa primero el
 [modulo 07](../docs/modulos/07-data-agent.md) y sus requisitos.
 
@@ -41,6 +42,9 @@ Para cada caso usa los campos de registro de
 sin rellenar hasta la ejecucion. Al corregir metadata o instrucciones, repite
 los casos afectados y alguno ya correcto para detectar regresiones.
 
-Publica solo tras revisar las evidencias. La version publicada y el borrador
-son distintos; publicar no autoriza compartir ni cambiar permisos.
-Este documento no demuestra que exista un agente en Fabric.
+Publica para habilitar el endpoint MCP y ejecuta los casos contra **ese agente**,
+no contra FabricIQ directamente sobre el modelo. Descubre herramienta y schema
+antes de invocar. Publicado no implica validado: si hay fallos, conserva ese
+estado, corrige con alcance autorizado, vuelve a publicar y repite las pruebas.
+La version publicada y el borrador son distintos; publicar no autoriza compartir
+ni cambiar permisos. Este documento no demuestra que exista un agente en Fabric.

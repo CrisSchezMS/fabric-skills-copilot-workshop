@@ -1,5 +1,6 @@
-Preparar este encargo no autoriza crear ni ejecutar una tarea remota.
-Tras confirmar entorno, permisos y coste, usarlo como un unico resultado completo.
+Contrato de ejecucion: tras el intake y aprobacion exigidos por project-osmos,
+crear y arrancar UNA tarea remota para este resultado completo. No entregar
+solo este texto. Incorporar workspace/Lakehouse/esquema descubiertos en privado.
 
 Resultado:
 Construir la base analitica del taller de ventas ficticias. Inspeccionar las

@@ -1,76 +1,111 @@
-# 07 - Crear y evaluar un Fabric Data Agent
+# 07 - Copilot crea, publica y evalua el Fabric Data Agent
 
-**Objetivo:** permitir preguntas sobre ventas sin perder las definiciones
-validadas del modelo. No se trata de pegar un prompt y aceptar la primera respuesta.
+**Entrega:** `workshop_ventas_agent` con una sola fuente,
+`workshop_ventas_model`, publicado y con preguntas evaluadas.
+No necesitas crear el item manualmente en el portal.
 
-## Requisitos y entregables
+## Requisitos
 
-Completa 05. El agente inicial usara **solo `workshop_ventas_model`**, no raw,
-agregado y modelo a la vez. La ontologia es una ampliacion independiente.
+Modelo validado, permisos de creacion/escritura y capacidad compatible.
+La documentacion consultada requiere Fabric pagada F2+ o Premium P1+ con
+Fabric habilitado, junto a los ajustes IA/regionales aplicables. Comprueba
+los requisitos vigentes y la identidad concreta; el taller no cambia politicas.
 
-La documentacion consultada requiere capacidad Fabric pagada F2 o superior,
-o Premium P1 o superior con Fabric habilitado, y los ajustes de IA/regiones
-indicados por Microsoft. Deben prepararlos los administradores, no el agente.
-Para consumir el modelo desde Data Agent basta Read segun la ruta documentada;
-modificar el modelo o Prep for AI requiere Write. No generalices ese minimo
-a la app Rayfin, al editor de informes ni al MCP de modelado.
+No se inventa una skill de creacion de Data Agent. Existe un **SDK oficial**
+`fabric-data-agent-sdk` y REST publico de ciclo de vida. Copilot utiliza esas
+interfaces documentadas con autenticacion real y alcance aprobado.
+Si falta el SDK, pide aprobar instalacion en un entorno dedicado, fuera del repo.
 
-No se presupone una skill de creacion de Data Agent instalada. Usaremos el
-portal para crear el item y `semantic-model-authoring` para preparar metadata
-del modelo dentro de sus capacidades.
+## 1. Preparar el modelo sin frenar la creacion
 
-## Preparar el modelo antes del agente
+Con `semantic-model-authoring`, comprueba nombres, descripciones, medidas y
+relaciones. El detalle fisico ya excluye lineas no elegibles. La generacion
+DAX usa metadata y Prep for AI del modelo, no solo el prompt general del agente.
 
-```text
-Usa semantic-model-authoring si esta instalada. Con los contratos y
-plantillas/modelo-semantico.json, prepara una revision de nombres,
-descripciones, medidas explicitas y relaciones para informe y preguntas.
-Separa metadata editable por herramientas de la configuracion manual
-en Prep data for AI. No conectes, consultes ni modifiques modelos todavia.
-```
+`plantillas/instrucciones-modelo-ia.txt` orienta una mejora opcional mediante
+la experiencia soportada de Prep for AI. No edites su representacion interna.
+Si esa mejora requiere UI no automatizada, registrala aparte; no conviertas
+la creacion/publicacion normal del Data Agent en un paso manual por ello.
+Los pares Example queries no se admiten para modelos semanticos/ontologias
+en la documentacion revisada: no importes el JSON de evaluacion como fewshots.
 
-Comprueba las descripciones y medidas de 05. Revisa
-`plantillas/instrucciones-modelo-ia.txt` y, si procede, aplicalas manualmente
-en **Prep data for AI** del modelo. Incluye los objetos y dependencias
-necesarios, evitando fuentes duplicadas. No edites su representacion interna.
-
-**Distincion importante:** la generacion DAX se apoya en metadata y Prep for AI;
-no confies en instrucciones generales del Data Agent para imponer reglas DAX.
-Los pares pregunta/consulta de **Example queries** no estan soportados para
-modelos semanticos ni ontologias en la documentacion consultada.
-Las consultas DAX de este repo son referencias de validacion, no ejemplos
-que se puedan importar en ese panel. Verified Answers se configura y prueba
-manualmente en Prep for AI si la experiencia esta disponible.
-
-## Crear, probar y publicar
-
-1. Tras aprobar el destino, crea un item **Fabric data agent** nuevo llamado
-   `workshop_ventas_agent` en el workspace del taller.
-2. Anade el modelo semantico confirmado. Selecciona solo las tablas relevantes
-   de la plantilla del modelo, coherentes con su configuracion para IA.
-3. Revisa y aplica `plantillas/instrucciones-data-agent.txt` en las instrucciones
-   generales: idioma, fuentes, ambiguedad y limites. No son un control de acceso.
-4. Ejecuta los casos de `plantillas/evaluacion-agente.json` uno a uno,
-   empezando sin filtros. Abre los pasos intermedios y la consulta generada.
-5. Compara importes exactos con PySpark y medidas DAX bajo **los mismos filtros**.
-   Registra fallo, correccion y repeticion; no inventes una tasa de acierto.
-6. Solo despues de aprobar las pruebas, confirma la publicacion del agente.
-   Compartirlo o cambiar permisos es otra decision; no viene autorizado por crear.
+## 2. Ejecutar el ciclo de vida con SDK
 
 ```text
-Prepara un plan de evaluacion usando plantillas/evaluacion-agente.json.
-Para cada pregunta indica que medida/filtro deberia usarse, con que referencia
-comparar y que respuesta seria incorrecta. No rellenes respuestas observadas
-ni marques pasa/falla sin ejecucion real. No publiques ni cambies permisos.
+Continua el alcance aprobado. Crea y configura workshop_ventas_agent con el
+SDK oficial fabric-data-agent-sdk o REST publico documentado.
+Comprueba primero que no existe. Resuelve los IDs del workspace y del modelo
+validado; no me pidas copiarlos ni los guardes en el repo.
+Usa solo workshop_ventas_model como fuente y las instrucciones de
+plantillas/instrucciones-data-agent.txt. Verifica la configuracion real,
+publica el agente y relee su definicion. Despues ejecuta la evaluacion por
+su endpoint MCP y compara con las referencias DAX/Spark ya observadas.
+No entregues solo un item vacio ni un diseno.
 ```
 
-## Cierre
+La secuencia documentada del SDK, que **Copilot ejecuta** despues de comprobar
+colisiones y obtener aprobacion, es:
 
-Debe responder con cifras contrastadas y reconocer que no hay margen, pedidos,
-clientes ni causas medidas. "No puedo responder con estas fuentes" es una
-respuesta correcta cuando falta informacion.
+```python
+from fabric.dataagent.client import create_data_agent
 
-Conserva las evidencias del entorno fuera del repo publico. Si no dispones de
-la capacidad o configuracion necesaria, entrega el diseno y plan de evaluacion
-como **no ejecutados**, no un chatbot simulado.
-Referencia: `soluciones/07_data_agent.md`.
+# workspace_id y model_id proceden del descubrimiento real en la sesion privada.
+agent = create_data_agent(
+    data_agent_name="workshop_ventas_agent",
+    workspace_id=workspace_id,
+)
+agent.update_settings(ai_instructions=agent_instructions)
+agent.add_staging_datasource(
+    artifact_name_or_id=model_id,
+    workspace_id_or_name=workspace_id,
+)
+agent.publish_staging(description="Taller de ventas: modelo validado")
+```
+
+`agent_instructions` se lee del archivo del repo; los otros valores no son
+constantes de ejemplo para subir a Git. Fuera de Fabric, autentica el SDK como
+indique su guia, por ejemplo con AzureCliCredential; dentro de notebook aplica
+la autenticacion de Fabric. No imprimas ni guardes tokens.
+Comprueba que staging y publicacion contienen la unica fuente prevista.
+
+## Ruta REST si es la herramienta disponible
+
+Consulta los [contratos oficiales](../referencias-avanzadas.md) antes de componer
+la definicion. Las operaciones publicas incluyen:
+
+| Operacion | Ruta bajo `https://api.fabric.microsoft.com` |
+|---|---|
+| Crear con definicion | `POST /v1/workspaces/{workspaceId}/dataAgents` |
+| Leer definicion | `POST /v1/workspaces/{workspaceId}/dataAgents/{dataAgentId}/getDefinition` |
+| Publicar staging | `POST /v1/workspaces/{workspaceId}/dataAgents/{dataAgentId}/staging/publish` |
+
+La definicion publica tiene `Files/Config/data_agent.json`, configuracion de
+stage y datasource; no es el JSON de evaluacion. Usa los schemas actuales y
+metadata real de fuente, nunca IDs de elemento inventados. Crear un item vacio
+no completa el paso. No basta copiar partes "published" para afirmar publicacion:
+usa el ciclo oficial y verifica el resultado.
+
+Contributor y scopes de escritura aplicables son necesarios; una lectura no los
+demuestra. Sigue 201/202, LRO y Retry-After segun cada operacion. Si falla tras
+crear el item, conserva su ID e inspecciona el estado antes de otro intento.
+
+## 3. Evaluar el agente realmente publicado
+
+El endpoint MCP documentado es
+`https://api.fabric.microsoft.com/v1/mcp/workspaces/{workspaceId}/dataagents/{dataAgentId}/agent`.
+Copilot lo compone con los IDs reales, inicializa sesion y descubre sus
+herramientas/schema antes de invocar; no asume un nombre/argumento fijo.
+Solo funciona tras publicar. Tener FabricIQ no equivale a consultar este agente.
+
+Ejecuta los casos de `plantillas/evaluacion-agente.json`: total, categorias,
+mismos filtros, ambiguedad de "ventas", margen, causas y periodo ausente.
+Registra respuesta, consulta/pasos si estan disponibles y pasa/falla contra DAX
+y Spark **bajo los mismos filtros**. Si no se expone el SQL/DAX intermedio,
+declara ese limite, no inventes una traza.
+
+No inventes tasas de acierto ni resultados observados. Publicar permite
+probar el endpoint, pero **publicado no significa validado**. Si fallan casos,
+marca la entrega no aceptada, corrige con alcance autorizado, vuelve a publicar
+y repite los afectados. No compartas ni otorgues permisos implicitamente.
+
+[Referencia de evaluacion](../../soluciones/07_data_agent.md).

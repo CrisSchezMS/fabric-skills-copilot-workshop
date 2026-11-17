@@ -1,64 +1,53 @@
-# 04 - Delegar un resultado completo a Project Osmos
+# 04 - Copilot encarga y ejecuta la ingenieria con Project Osmos
 
-**Objetivo:** comparar escribir y ejecutar celdas con encargar a un agente remoto
-un resultado completo de ingenieria: inspeccion, notebook, tablas y validaciones.
-Osmos no se usa aqui para crear informes, ontologias, Data Agents ni Native Apps.
+**Entrega:** una tarea Osmos real que inspecciona las tres fuentes, guarda
+`workshop_03_base_analitica` y publica las tres tablas derivadas reconciliadas.
+Es una alternativa al [modulo 03](03-base-analitica.md), no otro paso posterior.
 
-## Preparacion
+## Elegibilidad y contrato
 
-Usa `project-osmos` desde Copilot CLI local, si esta instalada. Necesitas un
-Lakehouse que contenga las tres tablas originales y **ninguno de los tres
-destinos derivados**. Si ya completaste 03, prepara otro entorno de taller:
-no borres tablas para que este modulo funcione.
+Usa la skill `project-osmos` desde Copilot CLI local. Antes de crear una tarea,
+comprueba asignacion actual de capacidad y requisitos de servicio mediante el
+preflight de la skill. Una trial confirmada `FTL64` bloquea su ejecucion en
+produccion publica; no ver la capacidad no prueba ni trial ni elegibilidad.
+Un SKU no trial tampoco garantiza todos los requisitos de IA.
 
-En produccion publica, la skill exige comprobar asignacion actual y SKU.
-Una capacidad trial confirmada `FTL64` bloquea su ejecucion; un SKU no trial
-no garantiza toda la elegibilidad de IA. La falta de visibilidad de capacidad
-no prueba que sea trial ni elegible. No se cambia capacidad ni se evita el control.
-Comprueba siempre las reglas de la version instalada.
-
-## Plan primero, ejecucion despues
+Los tres destinos y el notebook deben estar ausentes. Si ya completaste Spark,
+continua desde el modelo o elige explicitamente otro Lakehouse de taller con
+sus datos originales; no borres tablas para probar Osmos.
 
 ```text
-Usa project-osmos solo para preparar un encargo, sin autenticarte ni consultar
-Fabric. Lee docs/datos.md, docs/contrato-analitico.md y
-plantillas/encargo-osmos.txt. Explica origenes, destinos, permisos, coste,
-artefactos de salida y como verificarias las reglas. Conserva todo el resultado
-de ingenieria en una unica tarea. No la crees ni la arranques.
+Elijo Project Osmos para la base analitica del workspace/Lakehouse confirmados.
+Usa project-osmos y su preflight real. Lee plantillas/encargo-osmos.txt y los
+dos contratos de datos. Completa el intake y presentame el contrato final:
+una unica tarea con inspeccion, notebook, tres tablas y validaciones.
+Tras mi aprobacion del contrato, crea y arranca esa tarea remota y sigue su
+estado. No me entregues solo el texto del encargo.
 ```
 
-Revisa el [encargo de referencia](../../plantillas/encargo-osmos.txt).
-Las tablas raw siguen siendo fuentes de solo lectura. El prefijo permitido
-no basta: el encargo limita las escrituras a **tres nombres exactos**.
+El contrato de [referencia](../../plantillas/encargo-osmos.txt) fija fuentes,
+reglas, tipos y nombres exactos. Copilot incorpora los destinos descubiertos
+y explica consumo de capacidad antes de pedir la aprobacion requerida.
+Osmos no crea informes, ontologias, Data Agents ni Apps en este encargo.
 
-Si quieres ejecutar, proporciona los nombres reales de workspace/Lakehouse
-fuera del repositorio o elige el contexto confirmado y autoriza su descubrimiento.
-No pegues tokens. La creacion y arranque de una tarea requieren otra aprobacion,
-despues de revisar el contrato de ejecucion que prepare la skill.
+## Ejecutar y seguir la misma tarea
 
-```text
-Quiero pasar del plan a una ejecucion de Project Osmos en mi entorno de taller.
-Antes de crear o arrancar la tarea, confirma conmigo el workspace y Lakehouse,
-verifica requisitos con la skill y presenta el encargo completo, los tres
-destinos y el notebook de salida. No reemplaces recursos existentes.
-Espera mi aprobacion del contrato final; no interpretes este mensaje como
-autorizacion para instalar herramientas o cambiar permisos/capacidad.
-```
+Una vez aprobado el contrato, usa las operaciones reales de la skill para
+crear/arrancar. Conserva ID, enlace y mensajes privados de **esa tarea**.
+No uses las APIs de agentes locales de Copilot como si consultaran Osmos.
+No crees una tarea por capa ni otra para reintentar un fallo ambiguo.
 
-## Evidencia y seguimiento
+Si requiere decisiones durante la ejecucion, contesta con el contrato; una
+ampliacion de destino necesita aprobacion. No permitas sobreescritura ni
+cambios de permisos/capacidad para avanzar.
 
-Tras un arranque autorizado, conserva el identificador de la tarea remota y
-su enlace de Fabric fuera del repo. Pide estado y mensajes de **esa misma tarea**.
-Una tarea local de Copilot no es una tarea Osmos. No crees otra para reintentar
-un fallo o para cada tabla.
+## Aceptacion
 
-Compara los resultados capturados por el servicio con el informe del notebook
-01: detalle unico, cantidades y relaciones validas, ingresos decimales,
-agregado reconciliado y calendario continuo. Comprueba tambien que el notebook
-se guardo donde se acordo y que no hubo mutaciones en las tablas originales.
-Un texto que diga "terminado" no sustituye estas evidencias.
+Comprueba en el servicio tarea finalizada, notebook guardado y tres tablas
+releidas. Valida claves, copias/conflictos, filtros de negocio, importe decimal,
+sumas del agregado y calendario continuo. Contrasta con el generador real.
+Un mensaje "terminado" no sustituye lectura y comprobaciones de artefactos.
 
-**Cierre:** distingue contrato aceptado, tarea arrancada y artefactos comprobados.
-Una cancelacion o borrado de tarea requiere su propia confirmacion; no se
-incluyen scripts de borrado. Sin elegibilidad o conexion, completa el encargo
-offline y usa 03 como alternativa explicita, no como una ejecucion Osmos simulada.
+Informa si queda publicacion parcial y no la borres ni relances automaticamente.
+Si Osmos esta bloqueado, ofrece elegir **Spark conectado**; no declares ejecutado
+un encargo local. Tras validacion, continua el modelo y las ramas de negocio.

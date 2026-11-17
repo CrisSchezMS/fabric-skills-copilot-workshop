@@ -1,26 +1,31 @@
 # Desarrollo y validacion
 
-Los participantes solo necesitan importar el notebook en Fabric. Estas
-instrucciones son para mantener o ampliar el repositorio.
+El recorrido del participante es conectado: [despliegue](despliegue.md).
+Estas instrucciones son para mantener el repo, no para sustituir esa ejecucion.
 
-## Fuente y notebooks autonomos
+## Fuentes y artefactos
 
-- `src/synthetic_data.py`: datos ficticios reproducibles y calculo de referencia
-  con la biblioteca estandar.
-- `src/fabric_tables.py`: esquemas Spark, validacion de nombres y escrituras protegidas.
-- `src/transform_sales.py`: transformacion PySpark de referencia.
-- `src/analytics_sales.py`: destinos analiticos opt-in, calendario, agregado
-  y publicacion protegida con reconciliacion.
-- `tools/build_notebooks.py`: ensambla el codigo en notebooks independientes y
-  regenera el JSON de resultados con la configuracion original.
+| Fuente | Funcion |
+|---|---|
+| `src/synthetic_data.py`, `src/fabric_tables.py` | Generador y esquemas originales, conservados |
+| `src/profile_sales.py` | Esquema primero; contadores raw y sin copias separados |
+| `src/transform_sales.py` | Limpieza, conflictos, dimensiones e importe decimal |
+| `src/analytics_sales.py` | Agregado, calendario, reconciliacion y escritura protegida |
+| `tools/build_notebooks.py` | Unico notebook distribuido: generador; resultados de referencia |
+| `tools/build_deployment_notebook.py` | Notebook operativo autonomo que Copilot despliega/ejecuta |
 
-Cambiar solo un `.ipynb` no modifica su fuente. Regenera despues de editar fuentes.
-Los notebooks publicados nunca deben contener salidas ni IDs del entorno.
+No edites solamente un `.ipynb`. El constructor de despliegue inserta fuentes,
+esquema e ID de Lakehouse reales, por lo que su salida se guarda **fuera del repo**
+en una ruta privada nueva. Valida el Lakehouse al ejecutarse y publica sin un
+flag de escritura desactivado. La autorizacion se obtiene antes de arrancarlo.
+Los helpers de escritura mantienen la aprobacion explicita y `errorifexists`.
+El generador distribuido no incorpora ese contexto y se conserva sin cambios.
 
-## Comandos (PowerShell, desde la raiz)
+## Comandos locales desde la raiz
 
-Python 3.11 para desarrollo; Java 17 y PySpark para las pruebas de integracion.
-No instales estas dependencias dentro de un notebook de Fabric.
+Python 3.11 para desarrollo; Java 17 y PySpark para integracion.
+Instala dependencias en un entorno dedicado cuando corresponda, nunca dentro
+del notebook de ventas para arreglar una edicion:
 
 ```powershell
 python -m venv .venv
@@ -31,9 +36,10 @@ python -m tools.build_notebooks
 python -m ruff check .
 python -m tools.build_notebooks --check
 python -m unittest discover -s tests -v
+node --test tests\test_native_app.mjs
 ```
 
-Para incluir Spark local en el mismo proceso de pruebas:
+Spark local opt-in:
 
 ```powershell
 $env:RUN_SPARK_TESTS = "1"
@@ -41,48 +47,24 @@ python -m unittest discover -s tests -v
 Remove-Item Env:RUN_SPARK_TESTS
 ```
 
-Los tests Spark usan una sesion local de prueba sin UI y no se conectan a Fabric.
-No prueban OneLake, el catalogo Fabric, permisos, importacion en el portal ni el
-motor T-SQL. La compatibilidad final debe comprobarse en un Lakehouse de prueba.
+CI usa Spark 3.5 y no consulta Fabric. Las pruebas cubren determinismo,
+reglas de negocio, conflictos, redondeo, perfiles raw/sin copias, destinos,
+reconciliacion y codigo autonomo. El notebook operativo se prueba en memoria,
+con lectura de catalogo y escritura remota sustituidas, sin crear tablas reales.
+No se necesitan SDK de Data Agent, Rayfin, tokens ni secretos de CI.
+El test Node comprueba el adaptador con fixtures; no despliega una App.
 
-Las pruebas unitarias comprueban determinismo, limites, errores inyectados,
-recuperacion de nulos, conflictos y proteccion de escrituras antes de modificar
-tablas. Las de integracion comparan PySpark con una referencia Python e incluyen
-redondeo, agregado, calendario y notebooks generados. CI ejecuta ambas categorias
-con Spark 3.5.
+## Aceptacion remota antes de impartir
 
-Si Node.js ya esta disponible, el adaptador independiente de Native App se
-comprueba sin dependencias ni conexion con:
+En un workspace de prueba **autorizado**, recorre el laboratorio completo:
+descubrimiento por nombre, inventario, aprobacion y despliegues reales.
+Comprueba generador, notebook/job analitico, tablas, modelo, informe,
+ontologia, Data Agent y App segun los criterios de cada modulo.
+Si algun componente no esta disponible, registra su bloqueo y no certifiques
+ese tramo como probado. Las pruebas locales no demuestran permisos ni previews.
 
-```powershell
-node --test tests\test_native_app.mjs
-```
-
-Eso prueba mapeo de resultados, decimales y errores con fixtures locales.
-No compila un proyecto Rayfin ni prueba su autenticacion, SDK o despliegue.
-Para esos puntos sigue el modulo 08 en un entorno autorizado y el build
-del scaffold oficial. No ejecutes npm/dev/up desde CI como prueba offline.
-
-No se ejecutan DDL/DML contra ningun recurso remoto desde CI y no se necesitan
-secretos de GitHub Actions. El flujo usa permisos de solo lectura del repositorio.
-
-## Comprobacion manual en Fabric antes de impartir
-
-1. Importa el notebook 01 en un workspace de pruebas y adjunta un Lakehouse vacio.
-2. Ejecuta con los parametros por defecto; compara el informe con
-   `docs/expected-results.json` y comprueba las tres tablas.
-3. Repite con ALLOW_OVERWRITE=False: debe detenerse antes de escribir.
-4. Ejecuta la solucion 02 y compara recuentos e ingresos exactos.
-5. En el SQL analytics endpoint, descubre el esquema y ejecuta por separado los
-   scripts de SQL en orden. Los tres resultados de validacion de claves deben
-   estar vacios. Los ingresos por categoria deben coincidir con PySpark.
-6. Si exportas notebooks desde Fabric, no publiques esa exportacion con salidas o
-   bindings: vuelve a generar los archivos distribuibles desde las fuentes.
-7. Para 03 usa primero WRITE_ANALYTICS=False; compara totales. Tras autorizar,
-   publica en un entorno sin destinos derivados. Comprueba lectura posterior
-   y bloqueo de reejecucion sin sobrescritura ni borrado.
-8. Recorre los criterios de cierre de los modulos avanzados que vayas a impartir.
-   Las plantillas son disenos/referencias, no artefactos remotos existentes.
-
-Este checklist es una tarea de preparacion, no una afirmacion de que ya se ha
-ejecutado en el tenant de la persona que descarga el material.
+Para comprobar SQL, descubre esquema y ejecuta cada SELECT por separado;
+no uses T-SQL para escribir Delta. Conserva evidencias privadas y no publiques
+exportaciones Fabric con outputs, IDs o bindings. No uses `dev/up` de Rayfin
+como validacion local inocua. Deten sesiones al terminar; no borres recursos
+automaticamente ni desactives protecciones para repetir el taller.

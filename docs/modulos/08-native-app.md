@@ -1,132 +1,100 @@
-# 08 - Crear una Fabric Native App de ventas
+# 08 - Copilot construye y despliega una Fabric Native App
 
-**Objetivo:** crear un item **App de Fabric**, con autenticacion y una consulta
-real al modelo semantico. No es una App de distribucion Power BI, un HTML local
-con cifras pegadas ni una aplicacion web alojada fuera de Fabric.
+**Entrega:** item `workshop_ventas_app` de **Fabric Apps (preview)**, URL
+publicada con SSO y consulta delegada real al modelo. No es una Power BI App
+de distribucion, un HTML local ni una web alojada fuera de Fabric.
 
-## Requisitos y alcance
+## Requisitos y aprobacion
 
-Completa 05. La documentacion actual denomina la experiencia **Fabric Apps
-(preview)** y usa Rayfin. Requiere capacidad, region soportada, habilitacion
-administrativa de Fabric Apps, permisos de creacion/despliegue y Node.js 20+
-en el equipo de desarrollo. Revisa las
-[fuentes verificadas](../referencias-avanzadas.md) antes de impartir.
+Modelo validado; Fabric Apps habilitado; capacidad/region soportadas;
+permisos de despliegue; Node.js 20+. La consulta delegada al modelo requiere
+los permisos de Read y Build de esa ruta; no generalices el minimo Read del
+consumo mediante Data Agent.
 
-No se presupone una skill especifica de Native Apps. Copilot trabaja con la
-documentacion oficial y el proyecto generado por Rayfin; las Fabric Skills
-ayudan con las fuentes y el modelo, no sustituyen el SDK.
+No se presupone una skill especifica de Apps instalada. Copilot utiliza
+el **scaffold y CLI oficiales Fabric Apps/Rayfin** y las Fabric Skills para
+descubrir/validar el modelo. Lee la documentacion vigente antes de operar.
+El repo aporta adaptador y payload, no un SDK parcial ni una App ya creada.
 
-El producto minimo se llama `workshop_ventas_app`: una pantalla autenticada
-con ingresos, lineas y unidades por categoria, selector de categoria, boton
-Actualizar y estados de carga, error y ausencia de datos. Consulta el modelo
-con un conector **fabric-semanticmodel** delegado; no duplica ventas en la
-base SQL de la app ni recalcula importes en JavaScript.
+El plan aprobado incluye proyecto privado, instalaciones concretas,
+autenticacion, conector y recursos internos que Rayfin vaya a aprovisionar.
+Si ese detalle aun no estaba aprobado, presentalo antes de ejecutar.
+`npm run dev` y `rayfin up` pueden crear backend remoto; no son pasos offline.
 
-## Fase 1: preparar sin instalar ni conectar
+## 1. Encargo de construccion real
 
 ```text
-Prepara una Fabric Native App de ventas usando la documentacion oficial actual
-de Fabric Apps y Rayfin. Lee docs/modulos/08-native-app.md y las plantillas
-native-app/. No es una Power BI App ni un HTML con datos incrustados.
-Planea el scaffold oficial, autenticacion Fabric SSO, conector delegado al
-modelo workshop_ventas_model y una pantalla de solo lectura por categoria.
-Separa instalaciones, autenticacion, descubrimiento, consultas y despliegues.
-No ejecutes comandos ni consultes mi tenant hasta que autorice cada fase.
+Construye y despliega workshop_ventas_app en el workspace confirmado usando
+el scaffold oficial Fabric Apps/Rayfin. Usa un proyecto privado fuera del repo.
+Comprueba colisiones y requisitos, muestra paquetes y recursos por aprobar
+si aun no lo estan. Despues ejecuta el scaffold, implementa, compila y publica.
+Quiero una pantalla con SSO, tabla por categoria, ingresos EUR, lineas,
+unidades, selector de categoria, Actualizar y estados de carga/vacio/error.
+Usa el modelo validado y un conector delegado fabric-semanticmodel salesmodel.
+Integra plantillas/native-app/consultar-ventas.mjs e ingresos-categoria.json.
+No copies ventas al backend, no recalcules importes en JavaScript y no uses
+datos incrustados. Prueba la URL publicada, no solo una pantalla local.
 ```
 
-El repo aporta un payload y un adaptador local, **no** un proyecto Rayfin completo.
-El scaffold oficial de la version elegida proporciona estructura, autenticacion,
-configuracion y dependencias. No generes a mano un `rayfin.yml` con IDs ficticios.
+## 2. Scaffold, autenticacion y conector
 
-## Fase 2: crear el proyecto, con aprobacion de instalacion
-
-Desde una carpeta de trabajo personal **fuera de este repo publico**, y solo
-tras aprobar descargas/instalacion:
+Copilot ejecuta los comandos documentados tras las aprobaciones necesarias:
 
 ```powershell
 npm create @microsoft/rayfin@latest workshop_ventas_app
 Set-Location workshop_ventas_app
+npx rayfin login
 ```
 
-Revisa el scaffold y sus instrucciones, `package.json` y lockfile. No mezcles
-paquetes Rayfin 1.x y 2.x; el adaptador de este repo usa la respuesta normalizada
-documentada para 2.x. Si el scaffold tiene otra version, adapta contra su
-documentacion antes de usarlo, sin forzar una actualizacion silenciosa.
+Sigue las instrucciones del scaffold, package.json y lockfile. No mezcles
+Rayfin 1.x/2.x; los paquetes `@microsoft/rayfin` deben tener las versiones
+exactas coherentes que indique el proyecto. El adaptador de este repo sigue
+la respuesta normalizada 2.x; adapta si cambia el contrato documentado.
+No inventes un `rayfin.yml` con IDs de ejemplo.
 
-Autenticarse, crear el item desde el portal o desplegar son operaciones
-separadas del scaffold. Antes de autorizarlas, confirma workspace y nombre.
-Revisa especialmente el codigo de ejemplo generado: esta app no necesita
-crear entidades de negocio, CRUD sobre ventas ni acceso anonimo.
+Descubre el modelo real y ejecuta el `connector add` que devuelva la herramienta
+para ese recurso, tipo `fabric-semanticmodel`, nombre `salesmodel`.
+No inventes sus selectores ni edites a mano el schema generado.
+Registra el runtime `fabricSemanticModel()` en `connectorsService` del cliente
+`RayfinClient.create`, segun la documentacion de la version.
 
-## Fase 3: conectar al modelo correcto
-
-Tras aprobar autenticacion y descubrimiento de solo lectura, usa la skill de
-modelado o la busqueda de conectores para resolver el modelo por su nombre.
-No copies IDs al repo publico. `npx rayfin login` no concede acceso al modelo.
-
-Usa el comando `connector add` que devuelva la busqueda para **ese modelo**,
-tipo `fabric-semanticmodel`, nombre `salesmodel`. Revisa sus selectores antes
-de ejecutarlo. Instala solo los paquetes/versiones exactos que indique el CLI,
-tras aprobacion. El schema generado de este conector no se edita a mano.
-
-Sigue la guia de registro del runtime `fabricSemanticModel()` en
-`connectorsService`, manteniendo el nombre `salesmodel` en todas las partes.
-El conector solo admite identidad **delegada**. La prueba CLI directa requiere
-Read y Build en el modelo; no reutilices el minimo Read del modulo Data Agent.
-
-Copia `plantillas/native-app/ingresos-categoria.json` a una ruta local del
-proyecto y autoriza por separado esta consulta de solo lectura:
+Prueba el conector con el payload del proyecto:
 
 ```powershell
 npx rayfin connector invoke salesmodel executeQuery --file .\ingresos-categoria.json
 ```
 
-Ese comando consulta Fabric aunque se ejecute en una terminal local.
-Comprueba `status`, columnas y filas; una prueba CLI correcta no demuestra
-que el conector desplegado funcione bajo la identidad del usuario de la app.
+Esto consulta Fabric de verdad. Comprueba status, columnas y filas. La prueba
+CLI no demuestra aun que la identidad/connector desplegados funcionen.
 
-## Fase 4: crear la pantalla y desplegar
+## 3. Implementar, compilar y publicar
 
-```text
-Usa el cliente del scaffold y el conector salesmodel ya comprobado.
-Integra consultar-ventas.mjs con ingresos-categoria.json. Crea una pantalla
-accesible con una tabla por categoria, selector local de categoria y Actualizar.
-Seleccionar categoria filtra las filas recibidas, no envia DAX construido
-desde texto del usuario. Mantiene los importes como texto decimal recibido
-del modelo; no suma ni recalcula dinero en el navegador.
-Muestra carga, error con requestId y estado vacio sin fingir ingresos cero.
-Usa Fabric SSO y hosting protegido. No uses autenticacion anonima, tokens
-incrustados, credenciales nuevas ni consultas arbitrarias escritas por usuarios.
-Prepara los cambios y los comandos de build; no arranques ni despliegues.
-```
+Copilot integra el adaptador con el cliente real del scaffold y construye
+la pantalla accesible. Las medidas del modelo siguen siendo numericas; el
+payload formatea el importe a string decimal solo para presentar. El navegador
+no suma dinero ni interpola texto libre en DAX. El selector filtra las categorias
+recibidas; Actualizar vuelve a consultar. No convertir errores en filas de ceros.
 
-El [adaptador](../../plantillas/native-app/consultar-ventas.mjs) recibe la funcion
-`executeQuery` del cliente oficial; no implementa autenticacion alternativa.
-El importe llega como string con dos decimales desde `FORMAT` en DAX para
-presentacion. Las medidas siguen siendo numericas en el modelo.
-
-Ejecuta el build que declare el scaffold y revisa configuracion antes de
-autorizar despliegue. Los comandos de publicacion documentados son:
+Ejecuta build/typecheck definidos por el scaffold. Revisa configuracion/recursos
+y despliega el alcance autorizado:
 
 ```powershell
 npx rayfin up
 npx rayfin up status
 ```
 
-**No son comandos locales inocuos.** `up` puede aprovisionar servicios, aplicar
-migraciones y publicar el frontend; requiere revisar y aprobar su alcance.
-`npm run dev` tambien puede provisionar/reutilizar backend en Fabric segun la
-version. No lo ejecutes pensando que es una previsualizacion desconectada.
-No uses `--force` ni un flag de aprobacion automatica para saltar revisiones.
+Sigue el estado hasta finalizacion. Usa hosting protegido y autenticacion
+oficial Fabric SSO; sin tokens incrustados, acceso anonimo ni `--force`.
+No habilites ajustes de tenant ni cambies permisos para superar un fallo.
 
-## Criterio de cierre
+## 4. Aceptacion desde Fabric
 
-La app debe existir como item Fabric y la **URL publicada** debe cargar con
-SSO y mostrar filas reales a traves del conector desplegado. Contrasta cada
-categoria con el informe; prueba actualizar, sin datos y error de acceso.
-Un fallo de permisos debe mostrarse como error, no como una tabla de ceros.
-No cambies permisos para hacer pasar la prueba sin una autorizacion adicional.
+Abre la **URL publicada** con una identidad autorizada, comprueba el item App
+y que los datos llegan mediante el conector desplegado. Contrasta cada categoria
+con DAX/informe, prueba Actualizar y verifica estados vacio/error sin modificar
+permisos reales solo para provocar pruebas. No inventes una prueba si el cliente
+no permite observarla: despliegue completado y UX verificada son estados distintos.
 
-Referencia de integracion y lista de comprobacion:
-`soluciones/08_native_app.md`. Sin servicios habilitados se entrega el proyecto
-o diseno local como pendiente de despliegue, nunca como app creada en Fabric.
+Sin requisito de preview o permiso, informa del bloqueo exacto y conserva
+el proyecto para reanudar; no declares terminada la App porque existe un frontend.
+[Referencia de integracion](../../soluciones/08_native_app.md).

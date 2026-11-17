@@ -1,9 +1,9 @@
 # Referencia 08: integrar la Native App sin fingir un despliegue
 
-El proyecto completo se obtiene con el scaffold oficial Rayfin de la version
-elegida. Este repo no incluye un item App desplegado ni una copia parcial del
-SDK. Sigue el [modulo 08](../docs/modulos/08-native-app.md) para separar
-instalacion, acceso, consultas y publicacion.
+Copilot obtiene el proyecto completo con el scaffold oficial Rayfin, implementa,
+compila y despliega tras aprobar el alcance. Este repo no incluye un item App
+ya desplegado ni una copia parcial del SDK. Sigue el
+[modulo 08](../docs/modulos/08-native-app.md) para ejecutar y verificar la entrega.
 
 ## Ruta de datos
 
@@ -17,7 +17,7 @@ Usuario autenticado
 ```
 
 El navegador no recibe tokens de servicio ni conexiones SQL. El conector
-guarda los selectores del modelo en configuracion del backend local/deploy,
+guarda los selectores del modelo en configuracion del proyecto/deploy,
 no en este repositorio publico. No se crean entidades CRUD para copiar ventas.
 
 ## Integracion de los archivos locales
@@ -67,7 +67,7 @@ texto libre dentro de DAX. No uses innerHTML para mostrar valores del modelo.
 1. **Adaptador local:** `node --test tests\test_native_app.mjs`, desde la raiz
    de este repositorio si Node esta instalado. No instala nada ni consulta Fabric.
 2. **Proyecto:** ejecutar el build/typecheck que declare el scaffold, despues
-   de instalar dependencias con consentimiento. Este repo no los ha ejecutado.
+   de instalar dependencias con consentimiento. Lo ejecuta Copilot en el proyecto.
 3. **Consulta CLI autorizada:** validar status y filas del payload contra
    el modelo; comprobar importes por categoria con el informe.
 4. **Publicacion aprobada:** `rayfin up` y `rayfin up status`, revisando

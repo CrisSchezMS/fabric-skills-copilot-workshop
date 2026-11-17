@@ -19,7 +19,8 @@ applyTo: "src/**/*.py,notebooks/**/*.ipynb,soluciones/**/*.ipynb"
 - Usa `notebookutils`, no APIs inventadas. No anadas REST ni credenciales si la
   tarea se resuelve con el Lakehouse predeterminado.
 - No cambies los datos raw para ocultar incidencias. Separa perfilado y limpieza.
-- Las tablas derivadas opcionales siguen `docs/contrato-analitico.md`. La
-  publicacion de referencia exige WRITE_ANALYTICS explicito y no permite overwrite.
+- Las tablas derivadas siguen `docs/contrato-analitico.md`. El notebook
+  desplegado publica al ejecutarse tras aprobar el alcance; no permite overwrite.
+  Los helpers de bajo nivel requieren `approved=True` desde ese flujo autorizado.
 - El calendario y agregado no cambian la granularidad del detalle; reconcilia
   filas, unidades e ingresos antes y despues de publicar.
