@@ -1,0 +1,30 @@
+{
+  "configuration": {
+    "seed": 42,
+    "n_sales": 10000,
+    "start_date": "2026-01-01",
+    "days": 90,
+    "duplicate_rate": 0.02,
+    "anomaly_rate": 0.01
+  },
+  "expected": {
+    "products": 12,
+    "stores": 4,
+    "raw_rows": 10200,
+    "unique_sales": 10000,
+    "extra_duplicate_rows": 200,
+    "null_category_rows": 101,
+    "null_city_rows": 102,
+    "invalid_quantity_rows": 101,
+    "orphan_product_rows": 100,
+    "cancelled_rows": 1077,
+    "clean_rows": 8761,
+    "net_revenue": "1085479.54",
+    "revenue_by_category": {
+      "Deporte": "201247.80",
+      "Hogar": "74112.31",
+      "Papeleria": "467874.78",
+      "Tecnologia": "342244.65"
+    }
+  }
+}
