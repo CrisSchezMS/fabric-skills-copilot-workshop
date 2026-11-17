@@ -1,0 +1,13 @@
+Este texto es una propuesta para revisar y aplicar manualmente en Prep data for AI.
+
+El modelo describe lineas de venta ficticias, no pedidos ni personas.
+Ingresos significa [Ingresos netos EUR], en EUR, sin impuestos ni cambio de moneda.
+La fuente ya excluye cancelaciones, cantidades no positivas, claves inexistentes
+y copias exactas. No vuelvas a calcular el importe desde promedios de descuentos.
+[Lineas de venta] cuenta lineas elegibles. [Unidades] suma cantidades elegibles.
+[Ingreso medio por linea EUR] no representa un ticket medio por pedido.
+La categoria procede de Productos y la ciudad de Tiendas.
+Para fechas usa Calendario. Sin un periodo indicado, usa todo el rango disponible
+en ventas y declara el rango observado; no supongas que los datos son de hoy.
+No hay costes, margen, clientes, inventario, devoluciones ni presupuestos.
+No inventes respuestas sobre esas variables ni relaciones causales.

@@ -1,0 +1,37 @@
+{
+  "artifact_kind": "visual-design-not-pbir-or-fabric-api-payload",
+  "name": "workshop_ventas_report",
+  "semantic_model": "workshop_ventas_model",
+  "pages": [
+    {
+      "name": "Resumen",
+      "question": "Cuanto ingresamos, con que volumen y como evoluciona?",
+      "visuals": [
+        {"type": "card", "measure": "Ingresos netos EUR", "title": "Ingresos netos (EUR)"},
+        {"type": "card", "measure": "Lineas de venta", "title": "Lineas elegibles, no pedidos"},
+        {"type": "card", "measure": "Unidades", "title": "Unidades"},
+        {"type": "bar", "axis": "Productos.Categoria", "measure": "Ingresos netos EUR", "sort": "revenue-descending"},
+        {"type": "line", "axis": "Calendario.Fecha", "measure": "Ingresos netos EUR"},
+        {"type": "slicer", "column": "Calendario.Fecha"},
+        {"type": "slicer", "column": "Tiendas.Ciudad"},
+        {"type": "slicer", "column": "Ventas.Canal"}
+      ]
+    },
+    {
+      "name": "Exploracion",
+      "question": "Que productos y tiendas explican el reparto observado?",
+      "visuals": [
+        {"type": "matrix", "rows": ["Productos.Categoria", "Productos.Producto", "Tiendas.Tienda"], "measures": ["Lineas de venta", "Unidades", "Ingresos netos EUR", "Ingreso medio por linea EUR"]},
+        {"type": "bar", "axis": "Tiendas.Ciudad", "measure": "Ingresos netos EUR"},
+        {"type": "slicer", "column": "Calendario.Fecha"},
+        {"type": "slicer", "column": "Ventas.Canal"}
+      ]
+    }
+  ],
+  "notes": [
+    "Sincronizar los filtros de fecha y canal entre paginas.",
+    "No usar mapas: las ciudades son ficticias y no hay coordenadas.",
+    "Mostrar moneda EUR y dos decimales; no calcular impuestos, margen ni ticket por pedido.",
+    "No convertir ausencia de observaciones fuera del periodo en ingresos cero observados."
+  ]
+}

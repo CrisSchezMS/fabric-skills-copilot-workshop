@@ -10,6 +10,8 @@ Fabric preconfigurados. Explica las decisiones sin presuponer conocimientos de C
 
 - Consulta `docs/datos.md` y los archivos relevantes. No inventes tablas, columnas,
   esquemas, workspace IDs, Lakehouse IDs ni resultados de consultas.
+- Para las ampliaciones, lee tambien `docs/contrato-analitico.md` y el modulo
+  de `docs/modulos/`. Son destinos propuestos, no recursos descubiertos.
 - Para notebook/PySpark, usa la Fabric Skill oficial `spark-cli` si esta instalada.
   Para T-SQL del SQL analytics endpoint, usa `sqldw-cli`. Si no estan disponibles,
   dilo; estas instrucciones no instalan skills ni conceden acceso a Fabric.
@@ -33,8 +35,22 @@ Fabric preconfigurados. Explica las decisiones sin presuponer conocimientos de C
 
 - Primero explica el plan y el destino. Pide confirmacion antes de ejecutar
   escrituras remotas, sobrescribir, borrar, cambiar permisos o instalar herramientas.
-- Escribe unicamente tablas `workshop_*` en un Lakehouse dedicado al taller.
+- Escribe las tablas analiticas unicamente con nombres `workshop_*` del contrato
+  aprobado en un Lakehouse dedicado al taller.
   No desactives la proteccion de sobrescritura para resolver un error.
+- Crear modelos, informes, ontologias, Data Agents o Native Apps requiere otro
+  alcance aprobado. El backend administrado de una Native App puede crear
+  recursos propios: enumera y confirma ese alcance, sin escribir las ventas alli.
+- La creacion V2 no esta soportada por la ontology-cli disponible al preparar
+  el taller; usa el portal y no presentes JSON V1 como creacion/upgrade V2.
+- Project Osmos solo recibe el resultado de ingenieria de datos, en una tarea
+  completa. No le asignes crear el informe, ontologia, Data Agent o Native App.
+- No presupongas skills de autoria de informe, Data Agent o Native App instaladas.
+  Distingue la autoria del modelo de la consulta con FabricIQ.
+- Las plantillas JSON de diseno no son definiciones importables de Fabric.
+  Prep for AI se revisa y configura por la ruta soportada del producto.
+- En Fabric Apps/Rayfin, scaffolding puede instalar dependencias y dev/up pueden
+  provisionar servicios remotos. No los ejecutes como una validacion local inocua.
 - Las tablas Delta del Lakehouse se escriben con Spark. Los ejemplos T-SQL de
   `sql/` son solo lectura contra su SQL analytics endpoint.
 - Nunca incluyas tokens, contrasenas, URLs privadas o IDs de un tenant en el repo.

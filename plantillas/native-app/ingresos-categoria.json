@@ -1,0 +1,4 @@
+{
+  "query": "EVALUATE\nSELECTCOLUMNS(\n    FILTER(\n        SUMMARIZECOLUMNS(\n            'Productos'[Categoria],\n            \"Lineas\", [Lineas de venta],\n            \"Unidades\", [Unidades],\n            \"Ingresos valor\", [Ingresos netos EUR]\n        ),\n        [Lineas] > 0\n    ),\n    \"Categoria\", 'Productos'[Categoria],\n    \"Lineas\", [Lineas],\n    \"Unidades\", [Unidades],\n    \"Ingresos EUR\", FORMAT([Ingresos valor], \"0.00\", \"en-US\")\n)\nORDER BY [Categoria] ASC",
+  "resultSetRowCountLimit": 500
+}

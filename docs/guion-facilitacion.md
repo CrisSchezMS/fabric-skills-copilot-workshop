@@ -8,6 +8,9 @@
 - Ten el notebook 01 descargado y un Lakehouse limpio de reserva.
 - Si usaras conexion en vivo, prueba autenticacion, herramientas y permisos.
   No dependas de ella: la ruta de generacion local cubre el objetivo del taller.
+- Para mostrar el resultado completo, prepara un modelo/informe validado
+  y, opcionalmente, una Native App en un entorno de demostracion dedicado.
+  Etiquetalos como preparados antes de la sesion, no creados en directo.
 - Mantiene la solucion separada hasta que hayas explicado las reglas.
 - No muestres tokens, tenants privados, otros workspaces ni datos de terceros.
 
@@ -15,17 +18,31 @@
 
 | Minutos | Que mostrar | Mensaje |
 |---|---|---|
-| 0-10 | Chat y primer prompt | Copilot necesita contexto y revision |
-| 10-20 | Instrucciones, skill local y skills oficiales | Instrucciones no son herramientas ni permisos |
-| 20-25 | Parametros e informe del notebook 01 ya preparado | Datos ficticios, repetibles y con errores conocidos |
-| 25-35 | Prompts 1-2 del laboratorio | Perfilar antes de modificar |
-| 35-45 | Prompts 3-4 y ejecucion manual revisada | Reglas de negocio y comprobaciones |
-| 45-50 | Resultado por categoria, referencia si hace falta | Generar, ejecutar y validar son pasos distintos |
-| 50-60 | Preguntas y cierre | Como repetirlo en un Lakehouse propio |
+| 0-8 | Objetivo, primer prompt y skills | Crear artefactos exige contexto, herramientas y revision |
+| 8-18 | Informe del generador y perfilado | Filas raw no son ventas unicas ni pedidos |
+| 18-30 | Reglas y limpieza en memoria | Dimensiones canonicas, decimal y comprobaciones |
+| 30-42 | Plan de base analitica del modulo 03 | Granularidad, tres destinos y escritura protegida; publicar solo tras aprobacion |
+| 42-53 | Consumo en un modelo/informe preparado | Mismas medidas y filtros; identificar que ya existia |
+| 53-60 | Elegir siguiente modulo y cierre | Osmos, modelo/informe, ontologia, agente o Native App |
 
-El arranque de Spark y la generacion se preparan antes de la sesion.
-Si tienes que generarlos en directo, recorta el bloque SQL opcional, no la
-explicacion de permisos ni la validacion.
+El arranque de Spark y la generacion se preparan antes de la sesion. No intentes
+construir todos los artefactos en una hora con principiantes. El bloque de
+publicacion puede quedar como codigo revisado si no hay tiempo o autorizacion.
+Si generas datos en directo, recorta el bloque de consumo, no permisos ni validacion.
+
+## Continuacion por modulos
+
+Usa [el mapa avanzado](modulos-avanzados.md) para organizar sesiones posteriores.
+03 y 04 comparan Spark guiado y Osmos para el mismo resultado de ingenieria.
+05 construye desde cero el modelo y las dos paginas que se mostraron preparadas.
+06 representa el negocio con entidades y relaciones. 07 evalua un agente contra
+referencias observadas; 08 crea una App real con SSO y conector al modelo.
+
+En cada entrega pide mostrar el artefacto, su fuente, la validacion y que
+autorizacion permitio crearlo. Para Osmos no basta mostrar una tarea arrancada;
+para Native App no basta mostrar una pantalla local; para Data Agent no basta
+una respuesta verosimil. Las limitaciones de previews se convierten en estados
+pendientes, no en un motivo para inventar APIs o saltar permisos.
 
 ## Mini-demo de personalizacion
 

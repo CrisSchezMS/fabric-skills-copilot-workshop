@@ -1,6 +1,6 @@
 ---
 name: workshop-ventas
-description: Guia el ejercicio de ventas sinteticas de este repositorio. Usar al pedir explorar los datos del taller, preparar la limpieza o explicar el resultado. No sustituye a las Microsoft Fabric Skills oficiales.
+description: Guia el taller de ventas y sus modulos de base analitica, Project Osmos, Power BI, ontologia, Data Agent y Native App. No sustituye a las Microsoft Fabric Skills oficiales.
 ---
 # Ejercicio guiado de ventas
 
@@ -25,3 +25,25 @@ oficiales instaladas. No las instala ni proporciona herramientas o autenticacion
    No abras `soluciones/` salvo que el usuario pida ver la solucion.
 8. Explica como comprobar recuentos, unicidad e ingresos. Si no has ejecutado,
    declara que el resultado es una propuesta pendiente de validacion.
+
+## Ampliaciones opcionales
+
+Lee `docs/modulos-avanzados.md`, `docs/contrato-analitico.md` y el modulo elegido.
+Reutiliza el modo local/manual/conectado que haya indicado el usuario; no vuelvas
+a preguntar si ya esta resuelto. La preparacion local no autoriza descubrimiento,
+autenticacion ni ejecucion remota.
+
+- 03 o 04 publican los mismos tres destinos: son alternativas, no dos cargas
+  consecutivas. Conserva el generador y las fuentes originales.
+- Para 04 utiliza `project-osmos`, si esta disponible, con un encargo completo
+  de ingenieria. Verifica sus requisitos y aprobacion antes de iniciar una tarea.
+- Para 05 utiliza `semantic-model-authoring` para el modelo. El informe tiene
+  ruta manual; no uses FabricIQ como si fuera autoria de informes.
+- Para 06 comprueba version y alcance de `ontology-cli`: no puede crear V2
+  mediante el flujo legacy V1 disponible al preparar el taller.
+- Para 07 separa metadata/Prep for AI del modelo e instrucciones del Data Agent.
+  No inventes una skill de creacion ni pares Example queries para modelo semantico.
+- Para 08 sigue Fabric Apps/Rayfin y el scaffold oficial, sin crear un supuesto
+  item App con un HTML local. Dev/up pueden aprovisionar backend en Fabric.
+- Usa las referencias de soluciones solo cuando se soliciten. Las plantillas
+  de diseno no son payloads oficiales ni prueba de un recurso creado.

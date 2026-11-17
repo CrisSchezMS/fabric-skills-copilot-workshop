@@ -83,3 +83,24 @@ SELECT juntas puede ocultar los primeros resultados.
 Explica con tus palabras que hizo Copilot, que aporto la skill y que tuviste
 que verificar. Si necesitas la referencia, importa
 `soluciones/02_limpiar_y_analizar.ipynb` en el mismo Lakehouse.
+
+## 6. Pasar de analizar a crear
+
+El ejercicio no termina necesariamente con un resumen en memoria. Sigue
+[el recorrido avanzado](modulos-avanzados.md) para crear una base persistida,
+un modelo con informe, ontologia, Data Agent y Native App. El generador se
+mantiene como punto de partida comun.
+
+```text
+Lee docs/modulos-avanzados.md y docs/contrato-analitico.md. Quiero continuar
+con el modulo 03 para preparar una base reutilizable por Power BI.
+Usa spark-cli si esta instalada. Primero genera codigo local y un plan de
+publicacion de los tres destinos exactos; no consultes ni modifiques Fabric.
+Incluye validaciones antes/despues, proteccion de todos los destinos y
+explicacion de la reejecucion. No abras soluciones/ hasta que te lo pida.
+```
+
+Puedes elegir [Project Osmos](modulos/04-project-osmos.md) como alternativa
+de ingenieria completa, no como una segunda carga sobre los mismos destinos.
+La creacion de cada artefacto posterior tiene requisitos, prompts y una puerta
+de aprobacion propios. No prometas construir todo el recorrido en 60 minutos.

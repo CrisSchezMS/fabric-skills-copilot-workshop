@@ -1,0 +1,59 @@
+Preparar este encargo no autoriza crear ni ejecutar una tarea remota.
+Tras confirmar entorno, permisos y coste, usarlo como un unico resultado completo.
+
+Resultado:
+Construir la base analitica del taller de ventas ficticias. Inspeccionar las
+tres tablas de origen, crear y guardar un notebook reutilizable en el workspace
+y publicar exactamente tres tablas Delta en el Lakehouse dedicado confirmado.
+El esquema es un parametro explicito y debe confirmarse antes de leer o escribir.
+No crear esquemas, otros Lakehouses, pipelines ni artefactos fuera de este alcance.
+
+Fuentes de solo lectura:
+- workshop_products: product_id int, product_name string, category string,
+  list_price decimal(18,2).
+- workshop_stores: store_id int, store_name string, city string.
+- workshop_sales_raw: sale_id string, sale_date date, product_id int,
+  store_id int, channel string, quantity int, unit_price decimal(18,2),
+  discount_rate decimal(4,2), status string, category_raw string nullable,
+  city_raw string nullable.
+
+Reglas:
+Comprobar primero columnas y tipos. Perfilar filas raw, sale_id distintos,
+copias exactas, nulos, cantidades no positivas y claves sin correspondencia.
+Validar claves dimensionales unicas y no nulas antes de unir.
+Quitar solo copias completamente iguales. Si un sale_id tiene versiones
+distintas o es nulo, detenerse sin elegir una version.
+Conservar completed, quantity > 0 y ambas claves existentes.
+Recuperar categoria y ciudad desde sus dimensiones; no rechazar por nulos
+en category_raw/city_raw. No usar estos campos como fuente canonica.
+Importes EUR: net_amount decimal(18,2) =
+ROUND(quantity * unit_price * (1 - discount_rate), 2), HALF_UP por linea.
+No usar float para importes ni promediar descuentos antes de calcularlos.
+
+Salidas exactas:
+- workshop_sales_clean: sale_id, sale_date, product_id, store_id, channel,
+  quantity, unit_price, discount_rate, status, category, city, net_amount.
+  Mismos tipos de origen, category/city string y net_amount decimal(18,2).
+- workshop_sales_daily: sale_date, product_id, store_id, channel,
+  sales_count bigint, units bigint, net_revenue decimal(38,2).
+  Agrupar el detalle limpio por las cuatro primeras columnas.
+- workshop_calendar: calendar_date date, calendar_year int,
+  calendar_quarter int, month_number int, year_month string yyyy-MM.
+  Dias contiguos de los anios completos entre fecha minima y maxima del detalle.
+- Notebook nuevo workshop_03_base_analitica, con parametros, reglas y controles,
+  guardado como item Notebook del workspace confirmado.
+
+Seguridad y validacion:
+No modificar fuentes ni recursos ajenos. No instalar paquetes, cambiar permisos,
+capacidad o configuracion del tenant. No sobrescribir ni borrar.
+Comprobar que no exista ninguna tabla de salida ni el notebook antes de escribir;
+si alguno existe, terminar con error sin escribir. Usar errorifexists para Delta.
+Si el destino tiene datos o el alcance es ambiguo, fallar: no cambiar esta regla
+por una nueva confirmacion ni sustituir automaticamente los nombres.
+Primero calcular y validar en memoria. No publicar si no hay lineas elegibles.
+Reconciliar filas del detalle con SUM(sales_count), unidades e ingresos exactos
+del agregado. Comprobar unicidad, relaciones y calendario sin huecos.
+Leer las salidas publicadas y repetir las validaciones. Informar recuentos y
+totales literales observados, no cifras prefijadas. No afirmar atomicidad.
+Si falla una escritura, informar de lo ya creado y detenerse sin borrar/reintentar.
+No publicar credenciales, IDs, URLs privadas ni salidas del entorno en Git.

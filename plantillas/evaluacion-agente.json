@@ -1,0 +1,16 @@
+{
+  "artifact_kind": "manual-evaluation-plan-not-executed-results",
+  "cases": [
+    {"id": "total", "question": "Cuales son los ingresos netos totales en EUR?", "check": "Coincide exactamente con net_revenue del informe del notebook 01, sin filtros.", "reference": "generator-report"},
+    {"id": "categoria", "question": "Desglosa ingresos netos, unidades y lineas por categoria.", "check": "Coincide por categoria con el resumen PySpark y validar-modelo.dax; no usa category_raw.", "reference": "category-summary"},
+    {"id": "filtro", "question": "Muestra ingresos del canal online por ciudad durante enero de 2026.", "check": "Mismos filtros inclusivos en informe y agente; comparar con una consulta revisada, no con el total general.", "reference": "filtered-report"},
+    {"id": "ambiguedad", "question": "Cuantas ventas hay?", "check": "Aclara si se piden ingresos, lineas o unidades; no llama pedidos a las lineas.", "reference": "business-contract"},
+    {"id": "margen", "question": "Que categoria tiene mayor margen?", "check": "Explica que no hay costes ni margen; no lo sustituye por ingresos.", "reference": "business-contract"},
+    {"id": "causa", "question": "Por que una tienda vende menos?", "check": "Puede describir diferencias observadas, pero no afirma causas no medidas.", "reference": "business-contract"},
+    {"id": "fuera-periodo", "question": "Cuanto ingresamos en enero de 2025?", "check": "Con parametros originales, indica que no hay observaciones para ese periodo; no extrapola ni inventa ceros observados.", "reference": "observed-date-range"}
+  ],
+  "record_for_each_case": [
+    "respuesta observada", "consulta generada", "filtros aplicados",
+    "referencia comparada", "pasa o falla", "correccion y nueva prueba"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "artifact_kind": "conceptual-mapping-not-fabric-api-payload",
+  "name": "workshop_ventas_ontology",
+  "target_experience": "V2 through Fabric portal, not legacy V1 JSON",
+  "entities": [
+    {
+      "name": "Productos",
+      "source_table": "workshop_products",
+      "key": "product_id",
+      "properties": ["product_id", "product_name", "category", "list_price"]
+    },
+    {
+      "name": "Tiendas",
+      "source_table": "workshop_stores",
+      "key": "store_id",
+      "properties": ["store_id", "store_name", "city"]
+    },
+    {
+      "name": "LineasVenta",
+      "source_table": "workshop_sales_clean",
+      "key": "sale_id",
+      "properties": [
+        "sale_id", "sale_date", "product_id", "store_id", "channel",
+        "quantity", "unit_price", "discount_rate", "net_amount"
+      ]
+    }
+  ],
+  "relationships": [
+    {"name": "correspondeA", "from": "LineasVenta.product_id", "to": "Productos.product_id", "cardinality": "many-to-one"},
+    {"name": "ocurreEn", "from": "LineasVenta.store_id", "to": "Tiendas.store_id", "cardinality": "many-to-one"}
+  ],
+  "constraints": [
+    "Validar claves unicas y no nulas en las tres entidades antes de vincular.",
+    "No enlazar las ventas raw como si fueran lineas elegibles.",
+    "Los tipos de entidad no son tablas nuevas; las relaciones no generan datos.",
+    "No inventar clientes, pedidos, inventario, costes ni coordenadas."
+  ]
+}

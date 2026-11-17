@@ -9,6 +9,8 @@ instrucciones son para mantener o ampliar el repositorio.
   con la biblioteca estandar.
 - `src/fabric_tables.py`: esquemas Spark, validacion de nombres y escrituras protegidas.
 - `src/transform_sales.py`: transformacion PySpark de referencia.
+- `src/analytics_sales.py`: destinos analiticos opt-in, calendario, agregado
+  y publicacion protegida con reconciliacion.
 - `tools/build_notebooks.py`: ensambla el codigo en notebooks independientes y
   regenera el JSON de resultados con la configuracion original.
 
@@ -46,7 +48,20 @@ motor T-SQL. La compatibilidad final debe comprobarse en un Lakehouse de prueba.
 Las pruebas unitarias comprueban determinismo, limites, errores inyectados,
 recuperacion de nulos, conflictos y proteccion de escrituras antes de modificar
 tablas. Las de integracion comparan PySpark con una referencia Python e incluyen
-redondeo y notebooks generados. CI ejecuta ambas categorias con Spark 3.5.
+redondeo, agregado, calendario y notebooks generados. CI ejecuta ambas categorias
+con Spark 3.5.
+
+Si Node.js ya esta disponible, el adaptador independiente de Native App se
+comprueba sin dependencias ni conexion con:
+
+```powershell
+node --test tests\test_native_app.mjs
+```
+
+Eso prueba mapeo de resultados, decimales y errores con fixtures locales.
+No compila un proyecto Rayfin ni prueba su autenticacion, SDK o despliegue.
+Para esos puntos sigue el modulo 08 en un entorno autorizado y el build
+del scaffold oficial. No ejecutes npm/dev/up desde CI como prueba offline.
 
 No se ejecutan DDL/DML contra ningun recurso remoto desde CI y no se necesitan
 secretos de GitHub Actions. El flujo usa permisos de solo lectura del repositorio.
@@ -63,6 +78,11 @@ secretos de GitHub Actions. El flujo usa permisos de solo lectura del repositori
    estar vacios. Los ingresos por categoria deben coincidir con PySpark.
 6. Si exportas notebooks desde Fabric, no publiques esa exportacion con salidas o
    bindings: vuelve a generar los archivos distribuibles desde las fuentes.
+7. Para 03 usa primero WRITE_ANALYTICS=False; compara totales. Tras autorizar,
+   publica en un entorno sin destinos derivados. Comprueba lectura posterior
+   y bloqueo de reejecucion sin sobrescritura ni borrado.
+8. Recorre los criterios de cierre de los modulos avanzados que vayas a impartir.
+   Las plantillas son disenos/referencias, no artefactos remotos existentes.
 
 Este checklist es una tarea de preparacion, no una afirmacion de que ya se ha
 ejecutado en el tenant de la persona que descarga el material.

@@ -204,10 +204,129 @@ def build_artifacts():
             "verify",
         ),
     ]
+    analytics_cells = [
+        cell(
+            "markdown",
+            """\
+            # 03 - Referencia avanzada: publicar la base analitica
+
+            Lee primero `docs/modulos/03-base-analitica.md` y `docs/contrato-analitico.md`.
+            Ejecuta el notebook 01 y adjunta aqui el mismo Lakehouse dedicado al taller.
+            No necesitas ejecutar la solucion 02: este notebook incorpora sus funciones.
+
+            **Por defecto no escribe.** Revisa el Lakehouse y SCHEMA; ejecuta hasta la validacion,
+            compara con el informe del notebook 01 y solo despues autoriza WRITE_ANALYTICS.
+            Los destinos son workshop_sales_clean, workshop_sales_daily y workshop_calendar.
+            Conserva las tres tablas originales; nunca sobrescribe tablas derivadas existentes.
+            Las escrituras no son atomicas: ante un fallo puede quedar una publicacion parcial.
+            No reintentes ni borres automaticamente; revisa el estado antes de decidir.
+            """,
+            "intro",
+        ),
+        cell(
+            "code",
+            'SCHEMA = None  # Confirma "dbo", otro esquema existente o "" sin esquemas.\n'
+            "WRITE_ANALYTICS = False\n",
+            "parameters",
+            parameters=True,
+        ),
+        cell("code", source_file("fabric_tables.py"), "fabric-helpers"),
+        cell("code", source_file("transform_sales.py"), "transform"),
+        cell("code", source_file("analytics_sales.py"), "analytics-helpers"),
+        cell(
+            "code",
+            """\
+            import notebookutils
+
+            require_default_lakehouse(notebookutils.runtime.context)
+            source_lakehouse_id = notebookutils.runtime.context["defaultLakehouseId"]
+            names = table_names(SCHEMA)
+            targets = analytics_table_names(SCHEMA)
+            print("Origenes:", names)
+            print("Destinos propuestos (no escritos):", targets)
+            source_frames = {key: spark.table(name) for key, name in names.items()}
+            expected_frames = create_dataframes(spark, {key: [] for key in names})
+            for key, frame in source_frames.items():
+                frame.printSchema()
+                actual = {field.name: field.dataType for field in frame.schema.fields}
+                expected = {
+                    field.name: field.dataType for field in expected_frames[key].schema.fields
+                }
+                if actual != expected:
+                    raise ValueError(f"Esquema distinto del contrato: {names[key]}")
+            """,
+            "inspect",
+        ),
+        cell(
+            "code",
+            """\
+            sales_clean = clean_sales(
+                source_frames["sales_raw"], source_frames["products"], source_frames["stores"]
+            )
+            analytics_frames = build_analytics_frames(sales_clean)
+            totals = validate_analytics_frames(analytics_frames)
+            print("Totales calculados en esta ejecucion:", totals)
+            for key, frame in analytics_frames.items():
+                print(key, frame.count())
+                frame.printSchema()
+            display(analytics_frames["sales_daily"].orderBy(
+                "sale_date", "product_id", "store_id", "channel"
+            ).limit(20))
+            """,
+            "validate",
+        ),
+        cell(
+            "markdown",
+            """\
+            ## Puerta de escritura
+
+            Detente y compara los totales con el informe del generador. Confirma los destinos
+            con quien administra el taller. Cambiar el parametro no concede permisos Fabric.
+            Si autorizas, cambia WRITE_ANALYTICS a True, reejecuta solo parametros y esta celda.
+            No cambies SCHEMA entre la inspeccion y la publicacion.
+            """,
+            "approval",
+        ),
+        cell(
+            "code",
+            """\
+            if type(WRITE_ANALYTICS) is not bool:
+                raise ValueError("WRITE_ANALYTICS debe ser True o False.")
+            if notebookutils.runtime.context.get("defaultLakehouseId") != source_lakehouse_id:
+                raise ValueError("El Lakehouse ha cambiado. Repite inspeccion y validacion.")
+            if analytics_table_names(SCHEMA) != targets:
+                raise ValueError("El destino ha cambiado. Repite inspeccion y validacion.")
+            if WRITE_ANALYTICS:
+                published = write_analytics_tables(
+                    spark, analytics_frames, SCHEMA, approved=WRITE_ANALYTICS
+                )
+                print("Tablas guardadas y reconciliadas:", published)
+            else:
+                print("Solo calculo en memoria. No se ha escrito ninguna tabla.")
+            """,
+            "publish",
+        ),
+        cell(
+            "markdown",
+            """\
+            ## Reejecucion y siguientes modulos
+
+            Devuelve WRITE_ANALYTICS a False al terminar. Una segunda publicacion se detiene si
+            existe cualquiera de los tres destinos, antes de escribir ninguno. Ante colisiones
+            usa un entorno de taller nuevo; no desactives la proteccion.
+
+            Solo tras publicar y validar, continua con modelo e informe, ontologia, Data Agent
+            o Native App. No cargues simultaneamente detalle y agregado como hechos sumables
+            en el modelo: duplicarias los ingresos. El modelo de referencia usa el detalle.
+            """,
+            "next",
+        ),
+    ]
     config = GeneratorConfig()
     return {
         "notebooks/01_generar_datos_sinteticos.ipynb": notebook(generator_cells),
         "soluciones/02_limpiar_y_analizar.ipynb": notebook(solution_cells),
+        "soluciones/03_publicar_analitica.ipynb": notebook(analytics_cells),
         "docs/expected-results.json": {
             "configuration": asdict(config),
             "expected": expected_results(generate_data(config)),

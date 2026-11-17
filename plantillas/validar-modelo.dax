@@ -1,0 +1,8 @@
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Productos'[Categoria],
+    "Lineas", [Lineas de venta],
+    "Unidades", [Unidades],
+    "Ingresos EUR", [Ingresos netos EUR]
+)
+ORDER BY 'Productos'[Categoria] ASC

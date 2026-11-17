@@ -1,12 +1,15 @@
 import contextlib
 import io
+import json
 import os
 import sys
 import types
 import unittest
 from decimal import Decimal
+from pathlib import Path
 from unittest.mock import patch
 
+from src.analytics_sales import build_analytics_frames, validate_analytics_frames
 from src.fabric_tables import create_dataframes
 from src.synthetic_data import GeneratorConfig, expected_results, generate_data
 from src.transform_sales import clean_sales
@@ -92,6 +95,74 @@ class SparkIntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "claves duplicadas"):
             clean_sales(self.frames["sales_raw"], duplicated_products, self.frames["stores"])
 
+    def test_analytics_reconciles_detail_daily_and_full_year_calendar(self):
+        clean = clean_sales(
+            self.frames["sales_raw"], self.frames["products"], self.frames["stores"]
+        )
+        frames = build_analytics_frames(clean)
+        actual = validate_analytics_frames(frames)
+        expected = expected_results(self.data)
+        self.assertEqual(actual["clean_rows"], expected["clean_rows"])
+        self.assertEqual(str(actual["net_revenue"]), expected["net_revenue"])
+        self.assertEqual(frames["calendar"].count(), 365)
+        self.assertEqual(
+            frames["sales_daily"]
+            .select("sale_date", "product_id", "store_id", "channel")
+            .distinct()
+            .count(),
+            frames["sales_daily"].count(),
+        )
+        self.assertEqual(
+            str(frames["sales_daily"].schema["net_revenue"].dataType), "DecimalType(38,2)"
+        )
+        from pyspark.sql import functions as F
+
+        corrupted = {
+            **frames,
+            "sales_daily": frames["sales_daily"].withColumn("units", F.col("units") + 1),
+        }
+        with self.assertRaisesRegex(ValueError, "no reconcilia"):
+            validate_analytics_frames(corrupted)
+
+    def test_analytics_rejects_empty_duplicate_and_ineligible_input(self):
+        from pyspark.sql import functions as F
+
+        clean = clean_sales(
+            self.frames["sales_raw"], self.frames["products"], self.frames["stores"]
+        )
+        with self.assertRaisesRegex(ValueError, "No hay ventas"):
+            build_analytics_frames(clean.limit(0))
+        with self.assertRaisesRegex(ValueError, "sale_id repetidos"):
+            build_analytics_frames(clean.limit(1).union(clean.limit(1)))
+        with self.assertRaisesRegex(ValueError, "no elegibles"):
+            build_analytics_frames(clean.withColumn("quantity", F.lit(0)))
+
+    def test_model_source_columns_and_types_match_actual_analytics_frames(self):
+        clean = clean_sales(
+            self.frames["sales_raw"], self.frames["products"], self.frames["stores"]
+        )
+        analytics = build_analytics_frames(clean)
+        sources = {
+            "workshop_products": self.frames["products"],
+            "workshop_stores": self.frames["stores"],
+            "workshop_sales_clean": analytics["sales_clean"],
+            "workshop_calendar": analytics["calendar"],
+        }
+        types = {
+            "int": "int64",
+            "string": "string",
+            "date": "dateTime",
+            "decimal(18,2)": "decimal",
+        }
+        spec_path = Path(__file__).resolve().parents[1] / "plantillas" / "modelo-semantico.json"
+        spec = json.loads(spec_path.read_text(encoding="utf-8"))
+        for table in spec["tables"]:
+            schema = sources[table["source_table"]].schema
+            for column in table["columns"]:
+                with self.subTest(table=table["name"], column=column["name"]):
+                    actual_type = schema[column["sourceColumn"]].dataType.simpleString()
+                    self.assertEqual(types[actual_type], column["dataType"])
+
     def test_standalone_notebooks_execute_without_repository_imports_or_fabric_access(self):
         notebooks = build_artifacts()
         fake_utils = types.ModuleType("notebookutils")
@@ -114,6 +185,24 @@ class SparkIntegrationTests(unittest.TestCase):
                 if cell["cell_type"] == "code":
                     exec(compile("".join(cell["source"]), cell["id"], "exec"), solution)
             self.assertEqual(solution["sales_clean"].count(), namespace["report"]["clean_rows"])
+            advanced = {
+                "__name__": "__main__",
+                "spark": self.spark,
+                "display": lambda frame: frame.count(),
+            }
+            for cell in notebooks["soluciones/03_publicar_analitica.ipynb"]["cells"]:
+                if cell["cell_type"] != "code":
+                    continue
+                if cell["id"] == "inspect":
+                    # The schema checks stay real; only the remote table lookup is replaced.
+                    with patch.object(self.spark, "table", side_effect=lookup.__getitem__):
+                        exec(compile("".join(cell["source"]), cell["id"], "exec"), advanced)
+                else:
+                    exec(compile("".join(cell["source"]), cell["id"], "exec"), advanced)
+                if cell["id"] == "parameters":
+                    advanced["SCHEMA"] = "dbo"
+            self.assertFalse(advanced["WRITE_ANALYTICS"])
+            self.assertEqual(advanced["totals"]["clean_rows"], namespace["report"]["clean_rows"])
 
 
 if __name__ == "__main__":

@@ -13,3 +13,5 @@ applyTo: "**/*.ipynb"
 - Modificar las fuentes y ejecutar `python -m tools.build_notebooks`.
 - El notebook 01 escribe las tres tablas raw/dimension. La solucion 02 solo lee
   esas tablas y calcula resultados en memoria; no debe persistir tablas nuevas.
+- La referencia avanzada 03 solo publica sus tres destinos del contrato analitico
+  con autorizacion explicita; por defecto calcula en memoria y nunca sobrescribe.

@@ -16,3 +16,6 @@ metastore_db/
 derby.log
 *.log
 data/
+.dataprojects/
+node_modules/
+.pbi/

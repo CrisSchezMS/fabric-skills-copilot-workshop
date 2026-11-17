@@ -87,6 +87,9 @@ El esquema es un parametro explicito, no se infiere de un nombre.
 
 La solucion 02 no escribe una capa silver ni gold: calcula todo en memoria.
 Persistir una capa limpia es una ampliacion que requiere plan y confirmacion.
+La ampliacion opcional de este repositorio se define por separado en
+[contrato-analitico.md](contrato-analitico.md). No cambia las tres tablas
+originales ni implica que existan ya los nuevos destinos.
 
 El generador construye filas en el driver. Admite entre 100 y 100.000 ventas base
 para limitar memoria/coste de esta demo; **no** es una propuesta de escalado.

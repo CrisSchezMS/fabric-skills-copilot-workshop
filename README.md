@@ -1,10 +1,13 @@
-# GitHub Copilot + Microsoft Fabric Skills: tu primera demo
+# GitHub Copilot + Microsoft Fabric Skills: de datos a aplicaciones
 
-Workshop de **60 minutos**, en espanol, para personas que estan empezando con
-Microsoft Fabric y no han utilizado GitHub Copilot.
+Workshop con una **ruta basica de 60 minutos y modulos avanzados opcionales**,
+en espanol, para personas que estan empezando con Microsoft Fabric y Copilot.
 
-**Caso:** preparar las ventas de una tienda ficticia, detectar errores de calidad
-y calcular ingresos por categoria usando Copilot y las Fabric Skills.
+**Caso:** partir de las ventas de una tienda ficticia para crear una base
+analitica, un modelo semantico, un informe Power BI, una ontologia, un Data Agent
+y una **Fabric Native App**. Project Osmos ofrece una ruta alternativa de
+ingenieria de datos autonoma. Cada modulo produce artefactos y exige validarlos;
+no se pretende construirlos todos en una hora.
 Todos los datos se generan desde cero; no se usan datos de personas ni empresas.
 
 ## Empieza por aqui: genera tus datos
@@ -66,6 +69,9 @@ no concede permisos y no conecta con tu tenant. Nada se autoejecuta al abrirlo.
 | [Notebook 01](notebooks/01_generar_datos_sinteticos.ipynb) | Generar datos y guardar las tres tablas Delta |
 | [Preparacion](docs/preparacion.md) | Requisitos, instalacion y comprobaciones previas |
 | [Laboratorio](docs/laboratorio.md) | Prompts copiables para explorar, planificar y limpiar |
+| [Recorrido avanzado](docs/modulos-avanzados.md) | Seis modulos para construir artefactos, con requisitos y limites |
+| [Contrato analitico](docs/contrato-analitico.md) | Nuevas tablas y consumidores propuestos, separados del raw |
+| [Plantillas](plantillas/) | Encargo Osmos, diseno del modelo/informe/ontologia, evaluacion del agente y adaptador Native App |
 | [Guion de 60 minutos](docs/guion-facilitacion.md) | Orden de la demo, tiempos y plan alternativo |
 | [Contrato de datos](docs/datos.md) | Columnas, incidencias y reglas de negocio |
 | [Resultados esperados](docs/expected-results.json) | Recuentos e ingresos con la configuracion original |
@@ -74,11 +80,30 @@ no concede permisos y no conecta con tu tenant. Nada se autoejecuta al abrirlo.
 | [Skill local del taller](.github/skills/workshop-ventas/SKILL.md) | Ejemplo original de una skill que guia el ejercicio |
 | [SQL](sql/) | Descubrimiento, perfilado, validacion de claves y resumen T-SQL |
 | [Solucion opcional](soluciones/02_limpiar_y_analizar.ipynb) | Referencia PySpark; lee datos, no guarda tablas |
+| [Publicacion opcional](soluciones/03_publicar_analitica.ipynb) | Referencia autonoma; escritura desactivada y sin sobrescritura |
+| [Referencias avanzadas](soluciones/) | Construccion guiada de modelo, informe, ontologia, agente y Native App |
 | [Desarrollo](docs/desarrollo.md) | Fuentes, regeneracion y pruebas locales/CI |
 
 La skill local **no es una Microsoft Fabric Skill oficial** y no sustituye su
 instalacion. No se incluyen copias de las skills oficiales ni configuraciones
 con credenciales. Las recomendaciones de extensiones de VS Code son opcionales.
+
+## Que puedes construir despues
+
+| Ruta | Artefacto |
+|---|---|
+| [Spark guiado](docs/modulos/03-base-analitica.md) **o** [Project Osmos](docs/modulos/04-project-osmos.md) | Detalle limpio, agregado diario, calendario y notebook reutilizable |
+| [Modelo e informe](docs/modulos/05-modelo-informe.md) | Modelo estrella Direct Lake, cuatro medidas y dos paginas Power BI |
+| [Ontologia](docs/modulos/06-ontologia.md) | Productos, tiendas y lineas de venta con relaciones y bindings |
+| [Data Agent](docs/modulos/07-data-agent.md) | Preguntas sobre el modelo, con evaluacion y limites comprobables |
+| [Fabric Native App](docs/modulos/08-native-app.md) | Item App con SSO y consulta delegada al modelo usando Fabric Apps/Rayfin |
+
+El generador no cambia. Las extensiones son opt-in y pueden requerir capacidad
+pagada, permisos, servicios preview y preparacion administrativa adicional.
+Las skills instaladas no automatizan necesariamente cada artefacto: se indican
+las rutas manuales y los limites de version, especialmente para ontologia V2.
+Las plantillas de diseno no se presentan como payloads de Fabric ni como
+artefactos ya desplegados. Consulta [las fuentes](docs/referencias-avanzadas.md).
 
 ## Primer prompt
 

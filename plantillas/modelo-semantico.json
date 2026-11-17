@@ -1,0 +1,86 @@
+{
+  "artifact_kind": "workshop-design-not-fabric-api-payload",
+  "name": "workshop_ventas_model",
+  "storage_mode": "DirectLake",
+  "description": "Ventas ficticias elegibles, una fila por linea. No representa pedidos.",
+  "tables": [
+    {
+      "name": "Ventas",
+      "source_table": "workshop_sales_clean",
+      "columns": [
+        {"name": "Id linea", "sourceColumn": "sale_id", "dataType": "string", "hidden": true},
+        {"name": "Fecha", "sourceColumn": "sale_date", "dataType": "dateTime"},
+        {"name": "Id producto", "sourceColumn": "product_id", "dataType": "int64", "hidden": true},
+        {"name": "Id tienda", "sourceColumn": "store_id", "dataType": "int64", "hidden": true},
+        {"name": "Canal", "sourceColumn": "channel", "dataType": "string"},
+        {"name": "Cantidad", "sourceColumn": "quantity", "dataType": "int64", "hidden": true},
+        {"name": "Importe neto", "sourceColumn": "net_amount", "dataType": "decimal", "hidden": true}
+      ]
+    },
+    {
+      "name": "Productos",
+      "source_table": "workshop_products",
+      "columns": [
+        {"name": "Id producto", "sourceColumn": "product_id", "dataType": "int64", "hidden": true},
+        {"name": "Producto", "sourceColumn": "product_name", "dataType": "string"},
+        {"name": "Categoria", "sourceColumn": "category", "dataType": "string"}
+      ]
+    },
+    {
+      "name": "Tiendas",
+      "source_table": "workshop_stores",
+      "columns": [
+        {"name": "Id tienda", "sourceColumn": "store_id", "dataType": "int64", "hidden": true},
+        {"name": "Tienda", "sourceColumn": "store_name", "dataType": "string"},
+        {"name": "Ciudad", "sourceColumn": "city", "dataType": "string"}
+      ]
+    },
+    {
+      "name": "Calendario",
+      "source_table": "workshop_calendar",
+      "date_column": "Fecha",
+      "columns": [
+        {"name": "Fecha", "sourceColumn": "calendar_date", "dataType": "dateTime"},
+        {"name": "Anio", "sourceColumn": "calendar_year", "dataType": "int64"},
+        {"name": "Trimestre", "sourceColumn": "calendar_quarter", "dataType": "int64"},
+        {"name": "Mes numero", "sourceColumn": "month_number", "dataType": "int64"},
+        {"name": "Anio mes", "sourceColumn": "year_month", "dataType": "string"}
+      ]
+    }
+  ],
+  "relationships": [
+    {"one": "Productos.Id producto", "many": "Ventas.Id producto", "filter": "one-to-many", "active": true},
+    {"one": "Tiendas.Id tienda", "many": "Ventas.Id tienda", "filter": "one-to-many", "active": true},
+    {"one": "Calendario.Fecha", "many": "Ventas.Fecha", "filter": "one-to-many", "active": true}
+  ],
+  "measures": [
+    {
+      "name": "Ingresos netos EUR",
+      "table": "Ventas",
+      "expression": "SUM('Ventas'[Importe neto])",
+      "formatString": "#,##0.00 \"EUR\"",
+      "description": "Suma de importes en EUR ya redondeados por linea. Solo ventas completed elegibles, sin copias."
+    },
+    {
+      "name": "Lineas de venta",
+      "table": "Ventas",
+      "expression": "COUNTROWS('Ventas')",
+      "formatString": "#,##0",
+      "description": "Numero de lineas elegibles sin copias, no numero de pedidos ni de clientes."
+    },
+    {
+      "name": "Unidades",
+      "table": "Ventas",
+      "expression": "SUM('Ventas'[Cantidad])",
+      "formatString": "#,##0",
+      "description": "Unidades de las lineas elegibles; no incluye cantidades no positivas."
+    },
+    {
+      "name": "Ingreso medio por linea EUR",
+      "table": "Ventas",
+      "expression": "DIVIDE([Ingresos netos EUR], [Lineas de venta])",
+      "formatString": "#,##0.00 \"EUR\"",
+      "description": "Ingreso neto dividido por lineas elegibles. No es ticket medio por pedido."
+    }
+  ]
+}

@@ -37,3 +37,5 @@ jobs:
         run: python -m tools.build_notebooks --check
       - name: Run unit and local Spark tests
         run: python -m unittest discover -s tests -v
+      - name: Test Native App adapter without Fabric access
+        run: node --test tests/test_native_app.mjs

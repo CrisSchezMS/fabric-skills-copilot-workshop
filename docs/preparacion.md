@@ -111,6 +111,30 @@ La conexion en vivo debe prepararse y comprobarse antes, no durante la demo.
 | Copilot no puede consultar Fabric | Trabaja en modo generacion local; no es un fallo del generador |
 | Spark no inicia o hay throttling | Revisa capacidad y concurrencia con la persona facilitadora |
 
+## 5. Preparacion para los modulos opcionales
+
+La [ruta avanzada](modulos-avanzados.md) requiere mas que el generador:
+
+| Modulo | Preparar antes de impartir |
+|---|---|
+| Base analitica | Un entorno sin los tres destinos derivados; permisos para tablas nuevas |
+| Osmos | Skill project-osmos y elegibilidad real de capacidad/servicio; la trial confirmada FTL64 no sirve para la ejecucion publica de esta skill |
+| Modelo e informe | Skill semantic-model-authoring, autoria Power BI y Direct Lake; MCP de modelado solo si se va a autorizar |
+| Ontologia | Experiencia y requisitos Ontology; creacion V2 guiada en el portal, no asumida en ontology-cli |
+| Data Agent | Capacidad y configuracion IA soportadas, modelo validado y permisos de creacion del item |
+| Native App | Fabric Apps habilitado, region/capacidad soportadas, permisos de despliegue y Node.js 20+ |
+
+Solo la persona administradora decide habilitar servicios o ajustar politicas.
+No se ejecutan instalaciones, az login, consultas o despliegues como parte
+automatica de leer el material. La instalacion de las dos skills basicas por
+APM no instala por si sola las demas: revisa el inventario real.
+
+Para una hora, prepara de antemano un modelo/informe validado de demostracion
+si quieres mostrar el consumo final. Distingue ese artefacto preparado por
+facilitacion de lo creado por participantes durante la sesion.
+Los laboratorios completos de creacion quedan en los modulos opcionales.
+Consulta [las fuentes y limites](referencias-avanzadas.md).
+
 ## Referencia de preparacion
 
 Las instrucciones de instalacion se contrastaron el 17 de noviembre de 2026 con
